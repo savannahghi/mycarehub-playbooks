@@ -1,0 +1,23 @@
+---
+
+- name: Current user can become others without pwd
+  ansible.builtin.template:
+      src: user.sudoers.d.j2
+      dest: '/etc/sudoers.d/{{ lookup("env","USER") }}'
+      owner: "root"
+      group: "root"
+      mode: u=rw,g=rw,o=r
+  become: yes
+  when: sudo_magick_needed
+  tags: ["sudoers"]
+
+- name: Add a sudoer with no pwd
+  ansible.builtin.template:
+      src: sudoer.d.j2
+      dest: "/etc/sudoers.d/{{ sudoer }}"
+      owner: "root"
+      group: "root"
+      mode: u=rw,g=rw,o=r
+  become: yes
+  when: sudoer is defined
+  tags: ["sudoers"]

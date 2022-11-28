@@ -1,0 +1,4 @@
+---
+
+teleport_pgp_key_download_url: "https://apt.releases.teleport.dev/gpg"
+teleport_major_version: "11"

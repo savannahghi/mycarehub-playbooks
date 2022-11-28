@@ -1,0 +1,62 @@
+---
+
+# run with: ansible-playbook -i inventories/infrastructure -v add_teleport_user.yml -e username=thanoskamau -e user_role=testing-access [-e target_host=teleport_master_test] [-e as_admin]
+#
+# Recommended naming convention for users: thanoskamau, gamoramwende, tonystarkomondi
+# The idea is to create clear and readable usernames for proper management and auditing
+
+- hosts: teleport_master_servers
+  vars:
+    as_admin: no
+
+  tasks:
+    - name: Check that a non empty username and user_role are provided
+      ansible.builtin.fail:
+        msg: "'{{ item.name }}' is not defined or is empty"
+      loop:
+        - {name: "username", value: "{{ username }}"}
+        - {name: "user_role", value: "{{ user_role }}"}
+      when: item.value is not defined and item.value|length > 0
+      tags: ["teleport_user"]
+    
+    - name: Ensure user account is added and configured
+      block:
+        - name: Add user primary group if not present
+          ansible.builtin.group:
+            name: "{{ username }}"
+            state: present
+
+        - name: Add user account if not present
+          ansible.builtin.user:
+            create_home: yes
+            group: "{{ username }}"
+            home: /home/{{ username }}
+            name: "{{ username }}"
+            password_expire_max: 99999
+            password_expire_min: 0
+            shell: /bin/bash
+            state: present
+
+        - name: Make user a sudoer with no pwd if as_admin is set
+          import_role:
+            name: sudoers
+          vars:
+            sudoer: "{{ username }}"
+          when: as_admin
+      become: yes
+      tags: ["teleport_user"]
+
+    - name: Ensure user is added on Teleport
+      block:
+        - name: Remove user if exists on Teleport
+          ansible.builtin.shell: "tctl users rm {{ username }}"
+          ignore_errors: yes
+          delegate_to: "{{ item }}"
+          loop: "{{ target_hosts.split(',') if target_hosts is defined else [inventory_hostname] }}"
+
+        - name: Add new user to Teleport
+          ansible.builtin.shell: "tctl users add {{ username }} --logins={{ username }} --roles={{ user_role }} --ttl=12h"
+          delegate_to: "{{ item }}"
+          loop: "{{ target_hosts.split(',') if target_hosts is defined else [inventory_hostname] }}"
+      become: yes
+      tags: ["teleport_user"]

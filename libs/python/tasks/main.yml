@@ -1,0 +1,45 @@
+---
+
+- name: Install official Python PPA
+  block:
+    - name: Install software-properties-common if not present
+      ansible.builtin.apt:
+        name: software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Add official Python PPA
+      ansible.builtin.apt_repository:
+        repo: "{{ python_ppa_url }}"
+        state: present
+        update_cache: yes
+  become: yes
+  tags: ["python"]
+
+- name: Install Python versions and their base packages
+  ansible.builtin.apt:
+    name:
+      - "python{{ item }}"
+      - "python{{ item }}-dev"
+      - python3-setuptools
+      - python3-pip
+    state: present
+    update_cache: yes
+  become: yes
+  loop: "{{ python_versions_to_install }}"
+  tags: ["python"]
+
+- name: Fix Python3.10 Pip
+  ansible.builtin.shell: apt install -y python3.10-distutils && curl -Ss https://bootstrap.pypa.io/get-pip.py | python3.10
+  become: yes
+  when: "'3.10' in python_versions_to_install"
+  tags: ["python"]
+
+- name: Install and update python packages
+  ansible.builtin.pip:
+    name:
+      - pip
+      - virtualenv
+    state: latest
+  become: yes
+  tags: ["python"]

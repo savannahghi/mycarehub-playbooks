@@ -1,0 +1,5 @@
+---
+
+# Teleport Master configs
+teleport_master_domain: "{{ vault_teleport_master_domain }}"
+teleport_master_admin_email: "{{ vault_teleport_master_admin_email }}"

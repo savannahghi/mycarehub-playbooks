@@ -1,0 +1,57 @@
+---
+version: v2
+teleport:
+  auth_servers:
+    - "{{ teleport_proxy_address }}"
+  auth_token: "{{ teleport_node_auth_token }}"
+  ca_pin: "{{ teleport_master_ca_pin }}"
+  nodename: "{{ facility_name }}_{{ facility_mfl }}"
+
+app_service:
+  debug_app: "{{ enable_app_service_debug }}"
+  enabled: yes
+
+  apps:
+  # KenyaEMR
+  - name: "{{ facility_mfl }}_emr"
+    uri: "http://localhost:8080"
+    labels:
+      app_type: kenya_emr
+      facility_mfl: "{{ facility_mfl }}"
+      facility_name: "{{ facility_name }}"
+  
+  - name: "{{ facility_mfl }}_dwapi"
+    url: "https://localhost:5753"
+    labels:
+      app_type: dwapi
+      facility_mfl: "{{ facility_mfl }}"
+      facility_name: "{{ facility_name }}"
+
+auth_service:
+  enabled: no
+proxy_service:
+  enabled: no
+ssh_service:
+  enabled: yes
+
+  # Static Labels for the node
+  # A node should be specified the facility name and facility mfl
+  # it belongs to at its host_vars file.
+  labels:
+    facility_mfl: "{{ facility_mfl }}"
+    facility_name: "{{ facility_name }}"
+    role: facility_node
+
+  # Dynamic Labels for the node
+  # The command value is the what is run just like running
+  # it at the shell e.g. lsb_release -d
+  commands:
+    - name: uptime
+      command: [uptime, -p]
+      period: 1m0s
+    - name: os-release
+      command: [lsb_release, -d]
+      period: 1h0m0s
+    - name: os-codename
+      command: [lsb_release, -c]
+      period: 1h0m0s

@@ -1,0 +1,50 @@
+---
+
+- name: Update packages
+  ansible.builtin.apt: update_cache=yes
+  become: yes
+  tags: ["common", "dependencies", "update"]
+
+- name: Install necessities
+  ansible.builtin.apt:
+    name:
+      - acl
+      - apt-transport-https
+      - build-essential
+      - ca-certificates
+      - curl
+      - htop
+      - iotop
+      - libssl-dev
+      - nano
+      - ncdu
+      - ntp
+      - software-properties-common
+      - tmux
+      - unzip
+      - vim
+      - zip
+    state: latest
+  become: yes
+  tags: ["common", "dependecies", "install"]
+
+- name: Add sensible configs
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "u=rw,g=rw,o=r"
+  become: yes
+  loop:
+    - {src: issue, dest: /etc/issue}
+    - {src: tmux.conf, dest: /etc/tmux.conf}
+  tags: ["common"]
+
+- name: Set localtime to Africa/Nairobi
+  ansible.builtin.file:
+    dest: /etc/localtime
+    src: /usr/share/zoneinfo/Africa/Nairobi
+    state: link 
+  become: yes
+  tags: ["common"]

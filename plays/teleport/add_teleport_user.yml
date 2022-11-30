@@ -1,6 +1,6 @@
 ---
 
-# run with: ansible-playbook -i inventories/infrastructure -v add_teleport_user.yml -e username=thanoskamau -e user_role=testing-access [-e target_host=teleport_master_test] [-e as_admin]
+# run with: ansible-playbook -i inventories/teleport_masters -v add_teleport_user.yml -e username=thanoskamau -e user_role=access [-e target_host=teleport_master_test] [-e as_admin]
 #
 # Recommended naming convention for users: thanoskamau, gamoramwende, tonystarkomondi
 # The idea is to create clear and readable usernames for proper management and auditing

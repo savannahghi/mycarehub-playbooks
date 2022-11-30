@@ -12,39 +12,43 @@
 * Get SSH configurations from `~/.ssh/config` for the new server and add them to `ssh.cfg`
     Sample SSH configs from `~/.ssh/config` file:
     ```
-    Host agakhan-msa-db.europe-west1-b.speedy-lattice-334
-        HostName 34.76.152.82
+    Host facility-1.region
+        HostName 10.0.0.123
         IdentityFile <path-to-google-privake-key-file>
         UserKnownHostsFile=<path-to-google-known-hosts-file>
-        HostKeyAlias=compute.1847378961746340905
         IdentitiesOnly=yes    
         CheckHostIP=no
     ```
 * Give the server an appropriate name on `ssh.cfg`. Change the `Host` to an appropriate name.
-***NOTE:*** The new name should be separated by an underscore:  `agakhan-msa-db` is INVALID, should be  `agakhan_msa_db`
+
+> ***NOTE:*** The new name should be separated by an underscore: `facility-1` is INVALID, should be  `facility_1`
 * Test that the server can be accessed with the new configs by ssh-ing into the server with the new configs
 	```bash	
     ssh -F ssh.cfg new_server_name
     ```
-* Add the server name to group of teleport servers in `inventories/infrastructure/hosts/teleport_servers`
-* Create a `new_server_name.yml` file in `inventories/infrastructure/host_vars` and add teleport configs for the new server.  
+* Add the server name to the appropriate group of teleport node servers in `inventories/teleport_node_servers/hosts`
+* Create a `new_server_name.yml` file in `inventories/teleport_node_servers/host_vars` and add teleport configs for the new server.  
     * Sample teleport configs for a new provider server
     ```yaml
-    teleport_proxy_address: "vault.slade360.co.ke:443"
+    teleport_proxy_address: "teleport.fahariyajamii.org:443"
     teleport_node_env: "prod" # 'testing' for test server
-    teleport_node_site_type: "PROVIDER"
+    teleport_node_site_type: "REMOTE_FACILITY"
     teleport_node_location: "GCP"
     teleport_node_region: "Belgium"
     ```
     - `teleport_proxy_address` - address for proxy being used to access the server. 
-       - For prod servers proxy address is `vault.slade360.co.ke:443`, for test servers, the proxy address is `mordor.slade360.co.ke:443`
+       - For prod servers proxy address is `teleport.fahariyajamii.org:443`, for test servers, the proxy address is `test.teleport.fahariyajamii.org:443`
     - `teleport_node_env` - Environment for the new server.   
        - For testing server, its value will be 'testing'
        - This is also used to manage roles in teleport.  
     - `teleport_node_site_type` - This describes the type of the new server. 
-       - "PROVIDER" if the server will be used for provider applications, 'PAYER' if the server is used for payer applications
+       - "REMOTE_FACILITY" if the server belongs to a facility in the FyJ program.
+       - "DHIS2" if the server is used to run DHIS2.
+       - "ONCOLOGY" if the server is used to run KenyaEMR with oncology modules.
     - `teleport_node_location` - This describes where server is hosted. 
-       - 'GCP' means the server is in Google Cloud Compute, 'EDGE' means the new server is on-premise
+       - 'GCP' means the server is in Google Cloud Compute.
+       - 'EDGE' means the new server is on-premise.
+       - 'HETZNER' means the server is hosted on Hetzner.
     - `teleport_node_region` - This is the physical location of the new server.
        - If the server is in GCP, its value will be the region of the server. For Edge servers, it will be location of the server e.g Mombasa
 
@@ -52,7 +56,8 @@
 	* Before running the playbook, get CA pin and token by running: 
      ```bash 
      sudo tctl tokens add --type=node
-     ``` 
+     ```
+
     * Sample output from the above command: 
     ```
     The invite token: 44f183dfe4e82100702c807c81e82ddf.
@@ -71,15 +76,15 @@
       - This invitation token will expire in 60 minutes
     ```
 
-	* use the `CA pin` and` token value` for this playbook's input prompt:
-*  Run this playbook `ansible-playbook -i inventories/infrastructure -l <new_server_name> -vvv teleport_node.yml`
+	* use the `CA pin` and `token value` for this playbook's input prompt:
+*  Run this playbook `ansible-playbook -i inventories/teleport_node_servers -l <new_server_name> -vvv teleport_node.yml`
 * Change SSH configurations for the new server on `ssh.cfg` file to teleport-specific configurations
 Final teleport-specific configuration:
     ```properties
-    Host agakhan_msa_db
-        HostName agakhan-mombasa-db
+    Host facility_1
+        HostName facility-1
         Port 3022
-        ProxyCommand ssh -p 3023 %r@vault.slade360.co.ke -s proxy:%h:%p
+        ProxyCommand ssh -p 3023 %r@teleport.fahariyajamii.org -s proxy:%h:%p
         UserKnownHostsFile=/dev/null
         HostkeyAlgorithms +ssh-rsa-cert-v01@openssh.com
         PubkeyAcceptedAlgorithms +ssh-rsa-cert-v01@openssh.com
@@ -90,5 +95,5 @@ Final teleport-specific configuration:
     - `ProxyCommand` Command used by teleport to forward connection to the new server
         - `3022` is the SSH port for teleport.
         - `3023` port is used by the new server when connecting to teleport
-        - `%r@vault.slade360.co.ke` is the cluster for the new server when its a production server. For a testing server, this will be `%r@mordor.slade360.co.ke`
+        - `%r@teleport.fahariyajamii.org` is the cluster for the new server when its a production server. For a testing server, this will be `%r@test.teleport.fahariyajamii.org`
 

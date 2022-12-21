@@ -1,0 +1,9 @@
+---
+
+- name: Restart MySQL 5.6
+  ansible.builtin.sysvinit:
+    enabled: true
+    name: mysql
+    stated: restarted
+  become: yes
+  tags: ["mysql56"]

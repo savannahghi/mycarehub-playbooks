@@ -1,6 +1,0 @@
----
-
-# The default values when not provided
-deploy_user: deploy
-teleport_major_version: "11"
-teleport_master_admin_email: "{{ vault_teleport_master_admin_email }}"

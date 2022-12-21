@@ -1,6 +1,6 @@
 ---
 
-- name: Deploy Teleprt master server
+- name: Deploy Teleport master server
   hosts: teleport_master_servers
   pre_tasks:
     - name: Create deploy user

@@ -1,0 +1,18 @@
+---
+
+mysql56_config_dir: /etc/mysql
+mysql56_config_fragments_dir: /etc/mysql/conf.d
+mysql56_data_dir: /var/lib/mysql/data
+mysql56_installation_base_dir: /usr/local/mysql
+mysql56_server_port: 3306
+mysql56_server_runtime_dir: /tmp
+mysql56_system_path_dir: /usr/local/bin
+mysql56_system_v_scripts_dir: /etc/init.d
+mysql56_temp_download_dir: /tmp
+mysql56_user: mysql
+mysql56_user_group: mysql
+
+# This can be found here -> https://downloads.mysql.com/archives/community/
+# Pick the latest version of MySQL 5.6 server when available.
+mysql56_archive_checksum: md5:b4a58f228dc5e2d579eb9ce59e566bd5
+mysql56_download_url: "https://cdn.mysql.com/archives/mysql-5.6/mysql-5.6.51-linux-glibc2.12-x86_64.tar.gz"

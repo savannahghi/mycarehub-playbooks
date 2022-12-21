@@ -1,0 +1,134 @@
+---
+# Based on the official MySQL installation guide found here: https://dev.mysql.com/doc/refman/5.6/en/binary-installation.html#binary-installation-layout
+
+- name: Install required lib packages and other dependecies
+  ansible.builtin.apt:
+    name:
+      - libaio1
+      - libncurses5
+      - tar
+    state: present
+  become: yes
+  tags: ["mysql56"]
+
+- name: Add MySQL user group
+  ansible.builtin.group:
+    name: "{{ mysql56_user_group }}"
+    state: present
+    system: yes
+  become: yes
+  tags: ["mysql56"]
+
+- name: Add MySQL user
+  ansible.builtin.user:
+    comment: Custom user for running MySQL 5.6 related tasks.
+    group: "{{ mysql56_user_group }}"
+    name: "{{ mysql56_user }}"
+    shell: /bin/false
+    state: present
+    system: yes
+  become: yes
+  tags: ["mysql56"]
+
+- name: Create MySQL config, installation, data and other essential directories
+  ansible.builtin.file:
+    group: "{{ mysql56_user_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ mysql56_user }}"
+    path: "{{ item }}"
+    state: directory
+  become: yes
+  loop:
+    - "{{ mysql56_config_dir }}"
+    - "{{ mysql56_config_fragments_dir }}"
+    - "{{ mysql56_installation_base_dir }}"
+    - "{{ mysql56_data_dir }}"
+  tags: ["mysql56"]
+
+- name: Download MySQL 5.6 Community Server
+  ansible.builtin.get_url:
+    checksum: "{{ mysql56_archive_checksum }}"
+    dest: "{{ mysql56_temp_download_dir }}/mysql56_community_server.tar.gz"
+    force: no
+    timeout: 10
+    url: "{{ mysql56_download_url }}"
+  become: yes
+  tags: ["mysql56"]
+
+- name: Unarchive and Install MySQL 5.6 Community Server
+  ansible.builtin.unarchive:
+    dest: "{{ mysql56_installation_base_dir }}"
+    extra_opts:
+     - --strip-components
+     - 1
+    group: "{{ mysql56_user_group }}"
+    keep_newer: yes
+    owner: "{{ mysql56_user }}"
+    remote_src: yes
+    src: "{{ mysql56_temp_download_dir }}/mysql56_community_server.tar.gz"
+  become: yes
+  tags: ["mysql56"]
+
+- name: Initialize MySQL data directory
+  ansible.builtin.command:
+    chdir: "{{ mysql56_installation_base_dir }}"
+    cmd: scripts/mysql_install_db --user={{ mysql56_user|quote }} --datadir={{ mysql56_data_dir|quote }}
+  become: yes
+  tags: ["mysql56"]
+
+- name: Copy global MySQL config
+  ansible.builtin.template:
+    backup: yes
+    dest: "{{ mysql56_config_dir }}"
+    force: yes
+    group: "{{ mysql56_user_group }}"
+    mode: "ug=rw,o=r"
+    owner: "{{ mysql56_user }}"
+    src: my.cnf
+  become: yes
+  tags: ["mysql56"]
+
+- name: Get all MySQL binary files
+  ansible.builtin.find:
+    file_type: file
+    hidden: no
+    paths:
+      - "{{ mysql56_installation_base_dir }}/bin"
+    patterns:
+      - "*"
+    use_regex: no
+  become: yes
+  register: mysql_bin_files
+  tags: ["mysql56"]
+
+- name: Add MySQL bin files to system path
+  ansible.builtin.file:
+    force: yes
+    group: "{{ mysql56_user_group }}"
+    mode: "ug=rwx,o=rx"
+    path: "{{ mysql56_system_path_dir }}/{{ item.path | ansible.builtin.basename }}"
+    src: "{{ item.path }}"
+    state: link
+  become: yes
+  loop: "{{ mysql_bin_files.files }}"
+  tags: ["mysql56"]
+
+- name: Install MySQL System V service script
+  ansible.builtin.copy:
+    dest: "{{ mysql56_system_v_scripts_dir }}/mysql"
+    force: yes
+    group: root
+    mode: "u=rwx,go=rx"
+    owner: root
+    remote_src: yes
+    src: "{{ mysql56_installation_base_dir }}/support-files/mysql.server"
+  become: yes
+  tags: ["mysql56"]
+
+- name: Enable and start MySQL service
+  ansible.builtin.sysvinit:
+    enabled: true
+    name: mysql
+    state: started
+  become: yes
+  tags: ["mysql56"]

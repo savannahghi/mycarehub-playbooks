@@ -2,7 +2,4 @@
 .vscode
 
 # Project files
-ansible.cfg
-hosts
-inventories
 ssh.cfg

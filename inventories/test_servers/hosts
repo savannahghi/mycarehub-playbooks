@@ -1,0 +1,2 @@
+[test_servers]
+test_facility_1 ansible_host=test_facility_1

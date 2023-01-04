@@ -1,0 +1,25 @@
+---
+
+- name: Test Apache Tomcat installation and setup
+  hosts: test_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
+      become: yes
+  post_tasks:
+    - name: Deploy successful, remove lock_file
+      ansible.builtin.file: path={{ lock_file_path }} state=absent
+      become: yes
+  roles:
+    - common
+  strategy: free
+  vars:
+    deploy_user: deploy
+    force_ignore_lock: "{{ force_ignore_lock }}"
+    lock_file_path: /tmp/ansible-test-apache-tomcat-setup.lock
+
+  tasks:
+    - name: Install and set up Apache Tomcat
+      import_role:
+        name: tomcat
+      tags: ["test_tomcat"]

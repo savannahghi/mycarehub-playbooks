@@ -1,0 +1,18 @@
+---
+
+catalina_base_initial_java_heap_size: 512m  # Xms
+catalina_base_java_home: ""
+catalina_base_maximum_java_heap_size: 2048m  # Xmx
+catalina_base_owning_group: ""
+catalina_base_owning_user: ""
+catalina_base_root_dir: ""
+catalina_base_server_connection_timeout: 20000
+catalina_base_server_listening_address: "0.0.0.0"
+catalina_base_server_listening_port: 8080
+catalina_base_server_proxy_port: 443
+catalina_base_server_redirect_port: 8433
+catalina_base_server_shutdown_port: 8010
+catalina_base_service_name: "tomcat"
+catalina_base_systemd_unit_file_load_path: /etc/systemd/system
+catalina_base_tomcat_root_dir: "/opt/apache_tomcat"  # This is referring to CATALINA_HOME
+catalina_base_tomcat_working_dir: "{{ catalina_base_root_dir }}"

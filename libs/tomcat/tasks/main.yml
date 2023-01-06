@@ -31,3 +31,61 @@
     src: "{{ tomcat_temp_download_dir }}/apache_tomcat.tar.gz"
   become: yes
   tags: ["tomcat"]
+
+- name: Make essential CATALINA_HOME directories readable to all users
+  ansible.builtin.file:
+    mode: "u=rwx,go=rx"
+    path: "{{ item }}"
+    state: directory
+  become: yes
+  loop:
+    - "{{ tomcat_installation_dir }}/bin"
+    - "{{ tomcat_installation_dir }}/conf"
+    - "{{ tomcat_installation_dir }}/lib"
+    - "{{ tomcat_installation_dir }}/temp"
+    - "{{ tomcat_installation_dir }}/work"
+  tags: ["tomcat"]
+
+- name: Get all binary files in the CATALINA_HOME bin folder
+  ansible.builtin.find:
+    file_type: file
+    hidden: no
+    paths:
+      - "{{ tomcat_installation_dir }}/bin"
+    patterns:
+      - "*"
+    use_regex: no
+  become: yes
+  register: catalina_home_binaries
+  tags: ["tomcat"]
+
+- name: Make all binary files in the CATALINA_HOME bin folder executable to all users
+  ansible.builtin.file:
+    mode: "u=rwx,go=rx"
+    path: "{{ item.path }}"
+    state: file
+  become: yes
+  loop: "{{ catalina_home_binaries.files }}"
+  tags: ["tomcat"]
+
+- name: Get all library files in the CATALINA_HOME lib folder
+  ansible.builtin.find:
+    file_type: file
+    hidden: no
+    paths:
+      - "{{ tomcat_installation_dir }}/lib"
+    patterns:
+      - "*"
+    use_regex: no
+  become: yes
+  register: catalina_home_libraries
+  tags: ["tomcat"]
+
+- name: Make all library files in the CATALINA_HOME lib folder readable to all users
+  ansible.builtin.file:
+    mode: "u=rw,go=r"
+    path: "{{ item.path }}"
+    state: file
+  become: yes
+  loop: "{{ catalina_home_libraries.files }}"
+  tags: ["tomcat"]

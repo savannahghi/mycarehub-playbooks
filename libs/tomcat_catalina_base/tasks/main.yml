@@ -1,0 +1,96 @@
+---
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "{{ item.name }} is not defined"
+  loop:
+    - { name: catalina_base_java_home, value: "{{ catalina_base_java_home }}" }
+    - { name: catalina_base_owning_group, value: "{{ catalina_base_owning_group }}" }
+    - { name: catalina_base_owning_user, value: "{{ catalina_base_owning_user }}" }
+    - { name: catalina_base_root_dir, value: "{{ catalina_base_root_dir }}" }
+    - { name: catalina_base_service_name, value: "{{ catalina_base_service_name }}" }
+    - { name: catalina_base_tomcat_root_dir, value: "{{ catalina_base_tomcat_root_dir }}" }
+  when: not item.value
+  tags: ["tomcat_catalina_base"]
+
+- name: Create CATALINA_BASE directories
+  ansible.builtin.file:
+    group: "{{ catalina_base_owning_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ catalina_base_owning_user }}"
+    path: "{{ item }}"
+    state: directory
+  become: yes
+  loop:
+    - "{{ catalina_base_root_dir }}"
+    - "{{ catalina_base_root_dir }}/bin"
+    - "{{ catalina_base_root_dir }}/conf"
+    - "{{ catalina_base_root_dir }}/lib"
+    - "{{ catalina_base_root_dir }}/logs"
+    - "{{ catalina_base_root_dir }}/temp"
+    - "{{ catalina_base_root_dir }}/webapps"
+    - "{{ catalina_base_root_dir }}/work"
+  tags: ["tomcat_catalina_base"]
+
+- name: Get default config files from CATALINA_HOME
+  ansible.builtin.find:
+    file_type: file
+    hidden: no
+    paths:
+      - "{{ catalina_base_tomcat_root_dir }}/conf"
+    patterns:
+      - "*"
+    use_regex: no
+  become: yes
+  register: default_tomcat_config_files
+  tags: ["tomcat_catalina_base"]
+
+- name: Copy default config from from CATALINA_HOME
+  ansible.builtin.copy:
+    dest: "{{ catalina_base_root_dir }}/conf/{{ item.path | ansible.builtin.basename }}"
+    force: yes
+    group: "{{ catalina_base_owning_group }}"
+    mode: "ug=rw,o=r"
+    owner: "{{ catalina_base_owning_group }}"
+    remote_src: yes
+    src: "{{ item.path }}"
+  become: yes
+  loop: "{{ default_tomcat_config_files.files }}"
+  tags: ["tomcat_catalina_base"]
+
+- name: Override the default server configuration with those specific to this setup
+  ansible.builtin.template:
+    backup: yes
+    dest: "{{ catalina_base_root_dir }}/conf"
+    force: yes
+    group: "{{ catalina_base_owning_group }}"
+    mode: "ug=rw,o=r"
+    owner: "{{ catalina_base_owning_user }}"
+    src: server.xml
+  become: yes
+  tags: ["tomcat_catalina_base"]
+
+- name: Override the default binary files with those specific to this setup
+  ansible.builtin.template:
+    backup: no
+    dest: "{{ catalina_base_root_dir }}/bin/{{ item }}"
+    force: yes
+    group: "{{ catalina_base_owning_group }}"
+    mode: "ug=rwx,o=r"
+    owner: "{{ catalina_base_owning_user }}"
+    src: "{{ item }}"
+  become: yes
+  loop:
+    - setenv.sh
+    - shutdown.sh
+    - startup.sh
+  tags: ["tomcat_catalina_base"]
+
+- name: Set up server systemd unit file
+  ansible.builtin.template:
+    backup: no
+    dest: "{{ catalina_base_systemd_unit_file_load_path }}/{{ catalina_base_service_name }}.service"
+    force: yes
+    src: tomcat.service
+  become: yes
+  tags: ["tomcat_catalina_base"]

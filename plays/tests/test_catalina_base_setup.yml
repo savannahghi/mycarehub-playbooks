@@ -1,0 +1,68 @@
+---
+
+- name: Test Apache Tomcat CATALINA_BASE setup
+  hosts: test_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
+      become: yes
+  post_tasks:
+    - name: Deploy successful, remove lock_file
+      ansible.builtin.file: path={{ lock_file_path }} state=absent
+      become: yes
+  roles:
+    # - common
+    - role: tomcat
+      vars:
+        tomcat_installation_dir: "{{ catalina_home }}"
+  strategy: free
+  vars:
+    app_user: tomcat
+    app_user_group: tomcat
+    catalina_home: /opt/apache_tomcat
+    deploy_user: deploy
+    force_ignore_lock: "{{ force_ignore_lock }}"
+    lock_file_path: /tmp/ansible-test-apache-tomcat-setup.lock
+
+  tasks:
+    - name: Install JDK 8
+      ansible.builtin.apt:
+        name: openjdk-8-jdk
+        state: latest
+        update_cache: yes
+      become: yes
+      tags: ["test_tomcat_catalina_base"]
+
+    - name: Add CATALINA_BASE user group 
+      ansible.builtin.group:
+        name: "{{ app_user_group }}"
+        state: present
+        system: yes
+      become: yes
+      tags: ["test_tomcat_catalina_base"]
+
+    - name: Add CATALINA_BASE user
+      ansible.builtin.user:
+        comment: Custom user for running Apache Tomcat
+        create_home: yes
+        group: "{{ app_user_group }}"
+        home: /home/{{ app_user }}
+        name: "{{ app_user }}"
+        shell: /bin/bash
+        state: present
+        system: yes
+      become: yes
+      tags: ["test_tomcat_catalina_base"]
+
+    - name: Install and set up Apache Tomcat CATALINA_BASE dir
+      import_role:
+        name: tomcat_catalina_base
+      vars:
+        catalina_base_java_home: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+        catalina_base_owning_group: "{{ app_user_group }}"
+        catalina_base_owning_user: "{{ app_user }}"
+        catalina_base_root_dir: /home/{{ app_user }}/test_apache_tomcat
+        catalina_base_server_listening_port: 7070
+        catalina_base_service_name: test_tomcat
+        catalina_base_tomcat_root_dir: "{{ catalina_home }}"
+      tags: ["test_tomcat_catalina_base"]

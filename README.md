@@ -28,7 +28,7 @@ After a successful Ansible installation, you will also need to install the [comm
 ansible-galaxy collection install community.general
 ```
 
-Optionally, if you would also want to have playbook output on a file per host, you need to create the the logs directory at `/var/log/ansible/hosts`. Ensure the directory is writable by the user running Ansible, or to simply things, make the directory writable by any user. This can be achieved using the following commands:
+Optionally, if you would also want to have playbook output stored locally on files for future reference, you need to create the logs directory at `/var/log/ansible/hosts`. Ensure the directory is writable by the user running Ansible, or to simply things, make the directory writable by any user. This can be achieved using the following commands:
 ```bash
 # Create the logs directory
 sudo mkdir -p /var/log/ansible/hosts
@@ -52,7 +52,7 @@ Some of the hosts defined in the inventory are only accessible through a [Telepo
     Ensure the hosts you aim to target are listed.
 - Use the following command to generate a ssh config for Teleport:
   ```bash
-  # NOTE: Before running this, ensure that the "~/.ssh/config/teleport/ssh_config" folder exists or create one if none exists.
+  # NOTE: Before running this, ensure that the "~/.ssh/config/teleport" folder exists or create one if none exists.
   tsh config | sed 's/^Host/Match Host/' | sed '/Match Host/s/ /,/3' > ~/.ssh/config/teleport/ssh_config
   ```
 
@@ -80,6 +80,7 @@ Some of the hosts defined in the inventory are only accessible through a [Telepo
 
   The important thing to note is that each host specification  starts with the `Match` keyword and that each host declaration in the `Match` clause is separated by a comma without any spaces in between.
 
+  That's it, you should be good to go :thumbsup:.
 
 
 Running

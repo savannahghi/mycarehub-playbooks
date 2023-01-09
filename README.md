@@ -19,8 +19,103 @@ how it works and specifically the following Ansible components:
 - [Playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html)
 - [Inventories](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)
 
-Reporsitory Structure:
-----------------------
+Prerequisites
+-------------
+Before running the playbooks, you will need to ensure you have `Ansible 2.14` or above installed on the [control node](https://docs.ansible.com/ansible/latest/getting_started/index.html#getting-started-with-ansible). Check the Ansible [installation docs](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible) on how to do that.
+
+After a successful Ansible installation, you will also need to install the [community.general](https://galaxy.ansible.com/community/general) Ansible Collection using the following command:
+```bash
+ansible-galaxy collection install community.general
+```
+
+Optionally, if you would also want to have playbook output on a file per host, you need to create the the logs directory at `/var/log/ansible/hosts`. Ensure the directory is writable by the user running Ansible, or to simply things, make the directory writable by any user. This can be achieved using the following commands:
+```bash
+# Create the logs directory
+sudo mkdir -p /var/log/ansible/hosts
+# Make the directory writable to any user
+sudo chmod a=rwx /var/log/ansible/hosts
+```
+
+### Working with Teleport Hosts
+Some of the hosts defined in the inventory are only accessible through a [Teleport server](https://goteleport.com/docs/). As such, special configuration for the Ansible control node is required. This can be achieved using the following steps:
+> Note: Unless specified otherwise, the instructions and examples from this section henceforth will use a Teleport server hosted at `https://test.teleport.fahariyajamii.org` and a Teleport user named `barakobama`.
+- First, ensure you have Teleport installed on the control node. Check the Teleport [installation docs](https://goteleport.com/docs/installation/) on how to do that.
+- Ensure you have ample access to access the target hosts through Teleport. Use the following commands to check this:
+  1. Login on Teleport from the terminal using the following command:
+    ```bash
+    tsh login --proxy=test.teleport.fahariyajamii.org --user=barakobama
+    ```
+  2. List the Teleport nodes/hosts accessible to you using the following command:
+    ```bash
+    tsh ls
+    ```
+    Ensure the hosts you aim to target are listed.
+- Use the following command to generate a ssh config for Teleport:
+  ```bash
+  # NOTE: Before running this, ensure that the "~/.ssh/config/teleport/ssh_config" folder exists or create one if none exists.
+  tsh config | sed 's/^Host/Match Host/' | sed '/Match Host/s/ /,/3' > ~/.ssh/config/teleport/ssh_config
+  ```
+
+  Assuming that the Teleport server in use is hosted at `https://test.teleport.fahariyajamii.org`, the Teleport user is named `barakobama` and the local user account is named `barak`, the generated file `~/.ssh/config/teleport/ssh_config`, should looks like this:
+  ```cfg  
+  #
+  # Begin generated Teleport configuration for test.teleport.fahariyajamii.org:443 from `tsh config`
+  #
+  
+  # Common flags for all test.teleport.fahariyajamii.org hosts
+  Match Host *.test.teleport.fahariyajamii.org,test.teleport.fahariyajamii.org
+      UserKnownHostsFile "/home/barak/.tsh/known_hosts"
+      IdentityFile "/home/barak/.tsh/keys/test.teleport.fahariyajamii.org/barakobama"
+      CertificateFile "/home/barak/.tsh/keys/test.teleport.fahariyajamii.org/barakobama-ssh/test.teleport.fahariyajamii.org-cert.pub"
+      PubkeyAcceptedKeyTypes +ssh-rsa-cert-v01@openssh.com
+      HostKeyAlgorithms ssh-rsa-cert-v01@openssh.com
+  
+  # Flags for all test.teleport.fahariyajamii.org hosts except the proxy
+  Match Host *.test.teleport.fahariyajamii.org,!test.teleport.fahariyajamii.org
+      Port 3022
+      ProxyCommand "/usr/local/bin/tsh" proxy ssh --cluster=test.teleport.fahariyajamii.org --proxy=test.teleport.fahariyajamii.org %r@%h:%p
+  
+  # End generated Teleport configuration
+  ```
+
+  The important thing to note is that each host specification  starts with the `Match` keyword and that each host declaration in the `Match` clause is separated by a comma without any spaces in between.
+
+
+
+Running
+-------
+
+First, `pip install -r requirements.txt`.
+
+*Some inventories may require ansible vault keys/passwords so consult the playbook owners for the same*
+
+Once you have the roles written, the playbook specified and the inventory laid out, you can run the playbooks as follows:
+
+`ansible-playbook -i inventories/<inventory> plays/<playbook>`
+
+Using a playbook named `app.yml` *(see below for an example of such a playbook)*:
+
+`ansible-playbook -i inventories/inventory app.yml`
+
+You can limit the run to a specific role by using tags e.g.:
+
+`ansible-playbook -i inventories/inventory --tags pg_db app.yml`
+
+You can also limit the run to a specific host but this runs the roles that the host has been grouped to.
+
+`ansible-playbook -i inventories/inventory --limit host1 app.yml`
+
+Ansible only cares about groups when it comes to grouping hosts or assigning variables to those groups.
+When running playbooks, the groups are just used to get the hosts. So for example, you'd think that running:
+
+`ansible-playbook -i inventories/inventory --limit postgresql_servers app.yml`
+
+will run the `postgresql` role alone. Instead it will run both `pg_db` and `postgresql` because the group `postgresql_servers` contains `host1`.
+
+Contributing
+------------
+
+### Reporsitory Structure:
 
 - **inventories**: host configurations for different environments.
 - **libs**: collection of roles used to defined reusable behaviour.
@@ -30,18 +125,14 @@ Reporsitory Structure:
 - **requirements.txt**: python packages that need to be installed to use this repo.
 - **README.md**: me!
 
-Rules for this repo
--------------------
+### Rules for this repo
 
-*Exceptions to these rules can be granted during MR review with good reason*
-
-### Contributing
-
-- Changes to this repo are made via Merge Request
+- Changes to this repo are made via Pull Request
 - Before anything is merged to `main` it has to be deployed first.
   In other words, the pre-merge step involves the deployment of any playbooks changed by the Merge Request.
   This ensures that `main` always reflect the same reality as what's in servers.
 
+*Exceptions to these rules can be granted during PR review with good reason*
 
 ### Roles
 
@@ -54,16 +145,16 @@ TLDR: Treat roles like parameterized pure functions. Composition > Inheritance.
   If a variable cannot have a sensible default, it should be left blank and validated that it has been specified by checking that it is not blank.
   Usually this can be done by the first task in the role. For example:
 
-```yaml
-# first task in a role
-- name: Check if required vars have been defined
-  ansible.builtin.fail: msg="{{ item.name }} is not defined"
-  loop:
-      - {"name": "variable1", "value": "{{ variable1 }}"}
-      - {"name": "variable2", "value": "{{ variable2 }}"}
-  when: not item.value
-  tags: ["my_role"]
-```
+  ```yaml
+  # first task in a role
+  - name: Check if required vars have been defined
+    ansible.builtin.fail: msg="{{ item.name }} is not defined"
+    loop:
+        - {"name": "variable1", "value": "{{ variable1 }}"}
+        - {"name": "variable2", "value": "{{ variable2 }}"}
+    when: not item.value
+    tags: ["my_role"]
+  ```
 
 - Each task specified in the role needs to be tagged with the role name i.e. `tags: ["role_name"]`. This is used when running playbooks to limit which role runs (or not).
 - Each task should have a sensible `name` entry. This makes it easy to understand what task is running and also acts as documentation.
@@ -100,10 +191,10 @@ For instance, this allows an environment to enable celery with `enable_celery: t
 - Each inventory should have a `host_vars`, `group_vars` and `hosts` directories.
 - Add host aliases to `inventories/hosts/hosts` ini file e.g.:
 
-```ini
-host1 ansible_host=....
-host2 ansible_host=....
-```
+  ```ini
+  host1 ansible_host=....
+  host2 ansible_host=....
+  ```
 
   Host aliases are very powerful as you can specify different aliases for the same server making it behave like it's multiple servers.
   Essentially, a Host alias is just a pointer to an ssh connection string. By using an external ssh config, you can trick ansible to treat the
@@ -111,52 +202,51 @@ host2 ansible_host=....
   multi-server apps where the app is in one server, it's database in another, it's message queue in another and so forth.
   However, you can't alias an ansible host alias to another ansible host alias, only to an external ssh config host i.e.:
 
-```ini
-# this DOES NOT work
-host1 ansible_host=...
-host2 ansible_host=host1
-```
+  ```ini
+  # this DOES NOT work
+  host1 ansible_host=...
+  host2 ansible_host=host1
+  ```
 
-- Add host ini files to `inventory/hosts` that correspond to playbook filenames which assign hosts to the groups that the playbook is defined.
-  Using the example playbook above (named `app.yml`), add a `app` file to `inventory/hosts` that looks like:
+- Add host ini files to `inventory/hosts` that correspond to playbook filenames which assign hosts to the groups that the playbook is defined. Using the example playbook below (named `app.yml`), add a `app` file to `inventory/hosts` that looks like:
 
-```ini
-[postgresql_servers]
-host1
+  ```ini
+  [postgresql_servers]
+  host1
 
-[app_db_servers]
-host1
+  [app_db_servers]
+  host1
 
-[app_servers]
-host2
-```
+  [app_servers]
+  host2
+  ```
 
 - Add files to `inventory/group_vars` that correspond to the groups to then specify variables meant for that group e.g.:
 
-```yaml
-# postgresql_servers.yml
-pg_version: 10
+  ```yaml
+  # postgresql_servers.yml
+  pg_version: 10
 
-# app_db_servers.yml
-app_db_1_name: "db_1"
-app_db_2_name: "db_2"
+  # app_db_servers.yml
+  app_db_1_name: "db_1"
+  app_db_2_name: "db_2"
 
-# app_servers.yml
-app_version: "1.1.0"
-```
+  # app_servers.yml
+  app_version: "1.1.0"
+  ```
 
 - You can also condense the variables into a single file (if there are no variable name clashes) by making a super group of your original groups.
   For example you can add the following to `inventory/hosts/app`:
 
-```ini
-# app
-# ....
+  ```ini
+  # app
+  # ....
 
-[app_super_group:children]
-postgresql_servers
-app_db_servers
-app_servers
-```
+  [app_super_group:children]
+  postgresql_servers
+  app_db_servers
+  app_servers
+  ```
 
   This then allows you to have all the variables inside the file `inventory/group_vars/app_super_group.yml`
 
@@ -203,36 +293,6 @@ Here's a simple example of a well defined playbook:
   roles:
       - role: app
 ```
-
-Running:
---------
-
-First, `pip install -r requirements.txt`.
-
-*Some inventories may require ansible vault keys/passwords so consult the playbook owners for the same*
-
-Once you have the roles written, the playbook specified and the inventory laid out, you can run the playbooks as follows:
-
-`ansible-playbook -i inventories/<inventory> <playbook>`
-
-Using our above examples:
-
-`ansible-playbook -i inventories/inventory app.yml`
-
-You can limit the run to a specific role by using tags e.g.:
-
-`ansible-playbook -i inventories/inventory --tags pg_db app.yml`
-
-You can also limit the run to a specific host but this runs the roles that the host has been grouped to.
-
-`ansible-playbook -i inventories/inventory --limit host1 app.yml`
-
-Ansible only cares about groups when it comes to grouping hosts or assigning variables to those groups.
-When running playbooks, the groups are just used to get the hosts. So for example, you'd think that running:
-
-`ansible-playbook -i inventories/inventory --limit postgresql_servers app.yml`
-
-will run the `postgresql` role alone. Instead it will run both `pg_db` and `postgresql` because the group `postgresql_servers` contains `host1`.
 
 Utilities
 ---------

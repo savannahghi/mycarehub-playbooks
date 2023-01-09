@@ -1,0 +1,57 @@
+---
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
+  loop:
+    - { name: openmrs_db_user_password, value: "{{ openmrs_db_user_password }}" }
+    - { name: openmrs_servlet_container_app_base_dir, value: "{{ openmrs_servlet_container_app_base_dir }}" }
+    - { name: openmrs_servlet_container_user, value: "{{ openmrs_servlet_container_user }}" }
+    - { name: openmrs_servlet_container_user_group, value: "{{ openmrs_servlet_container_user_group }}" }
+    - { name: openmrs_servlet_container_working_dir, value: "{{ openmrs_servlet_container_working_dir }}" }
+  when: not item.value
+  tags: ["openmrs"]
+
+- name: Download OpenMRS Platform war file
+  ansible.builtin.get_url:
+    dest: "{{ openmrs_servlet_container_app_base_dir }}"
+    force: yes
+    group: "{{ openmrs_servlet_container_user_group }}"
+    mode: "ug=rw,o=r"
+    owner: "{{ openmrs_servlet_container_user }}"
+    timeout: 10
+    url: "{{ openmrs_platform_war_file_download_url }}"
+  become: yes
+  tags: ["openmrs"]
+
+- name: Create OpenMRS database user
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ openmrs_db_socket_file_path }}"
+    name: "{{ openmrs_db_user }}"
+    password: "{{ openmrs_db_user_password }}"
+    priv: "{{ openmrs_db_user_privileges }}"
+    state: present
+  become: yes
+  tags: ["openmrs"]
+
+- name: Create OpenMRS application database
+  community.mysql.mysql_db:
+    login_host: "{{ openmrs_db_host }}"
+    login_password: "{{ openmrs_db_user_password }}"
+    login_port: "{{ openmrs_db_port }}"
+    login_user: "{{ openmrs_db_user }}"
+    name: "{{ openmrs_db_name }}"
+    state: present
+  tags: ["openmrs"]
+
+- name: Configure OpenMRS
+  ansible.builtin.template:
+    backup: yes
+    dest: "{{ openmrs_servlet_container_working_dir }}"
+    force: yes
+    mode: "ug=rw,o=r"
+    group: "{{ openmrs_servlet_container_user_group }}"
+    owner: "{{ openmrs_servlet_container_user }}"
+    src: "openmrs-runtime.properties"
+  become: yes
+  tags: ["openmrs"]

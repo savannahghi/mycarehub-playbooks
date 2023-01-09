@@ -2,7 +2,7 @@
 
 - name: Ensure required variables have been set
   ansible.builtin.fail:
-    msg: "{{ item.name }} is not defined"
+    msg: "'{{ item.name }}' is not defined"
   loop:
     - { name: catalina_base_java_home, value: "{{ catalina_base_java_home }}" }
     - { name: catalina_base_owning_group, value: "{{ catalina_base_owning_group }}" }

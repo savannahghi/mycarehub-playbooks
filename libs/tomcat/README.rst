@@ -1,7 +1,7 @@
 Install Apache Tomcat on an Ubuntu 20.04 LTS (and above) host
 =============================================================
 
-This roles installs an `Apache Tomcat Servlet/JSP Container <tomcat_home_page_>`_ on an Ubuntu 20.04 LTS host and above.
+This role installs an `Apache Tomcat Servlet/JSP Container <tomcat_home_page_>`_ on an Ubuntu 20.04 LTS host and above.
 This installation is more suitable for the root installation of Tomcat as defined by the ``CATALINA_HOME`` property. For runtime specific installations (defined by the ``CATALINA_BASE`` property), use the ``tomcat_catalina_base`` role.
 
 .. note::

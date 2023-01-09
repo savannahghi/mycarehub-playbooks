@@ -1,0 +1,25 @@
+---
+
+openmrs_db_host: "localhost"
+openmrs_db_name: "openmrs"
+openmrs_db_port: 3306
+openmrs_db_socket_file_path: "/tmp/mysqld.sock"
+openmrs_db_user: "openmrs_admin"
+openmrs_db_user_password: ""
+openmrs_db_user_privileges: '*.*:ALL,GRANT'
+
+# This is the path to the directory where 'war' files are installed on the 
+# target servlet container instance, typically named `webapps.
+openmrs_servlet_container_app_base_dir: ""
+
+# This is the path to the directory where the `openmrs_runtime.properties` 
+# file will be stored.
+openmrs_servlet_container_working_dir: ""
+
+# The user and user group that runs the target Java servlet container
+# instance. This user or group should have read and write permissions to the
+# aforementioned directories above.
+openmrs_servlet_container_user: ""
+openmrs_servlet_container_user_group: ""
+
+openmrs_platform_war_file_download_url: "https://versaweb.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.3.3/openmrs.war"

@@ -1,10 +1,11 @@
 ---
 
-openmrs_db_host: "localhost"
-openmrs_db_name: "openmrs"
+openmrs_config_dir_name: .OpenMRS
+openmrs_db_host: localhost
+openmrs_db_name: openmrs
 openmrs_db_port: 3306
-openmrs_db_socket_file_path: "/tmp/mysqld.sock"
-openmrs_db_user: "openmrs_admin"
+openmrs_db_socket_file_path: /tmp/mysqld.sock
+openmrs_db_user: openmrs_admin
 openmrs_db_user_password: ""
 openmrs_db_user_privileges: '*.*:ALL,GRANT'
 

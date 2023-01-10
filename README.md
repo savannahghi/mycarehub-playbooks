@@ -52,11 +52,11 @@ Some of the hosts defined in the inventory are only accessible through a [Telepo
     Ensure the hosts you aim to target are listed.
 - Use the following command to generate a ssh config for Teleport:
   ```bash
-  # NOTE: Before running this, ensure that the "~/.ssh/config/teleport" folder exists or create one if none exists.
-  tsh config | sed 's/^Host/Match Host/' | sed '/Match Host/s/ /,/3' > ~/.ssh/config/teleport/ssh_config
+  # NOTE: Before running this, ensure that the "~/.ssh/teleport" folder exists or create one if none exists.
+  tsh config | sed 's/^Host/Match Host/' | sed '/Match Host/s/ /,/3' > ~/.ssh/teleport/ssh_config
   ```
 
-  Assuming that the Teleport server in use is hosted at `https://test.teleport.fahariyajamii.org`, the Teleport user is named `barakobama` and the local user account is named `barak`, the generated file `~/.ssh/config/teleport/ssh_config`, should looks like this:
+  Assuming that the Teleport server in use is hosted at `https://test.teleport.fahariyajamii.org`, the Teleport user is named `barakobama` and the local user account is named `barak`, the generated file `~/.ssh/teleport/ssh_config`, should looks like this:
   ```cfg  
   #
   # Begin generated Teleport configuration for test.teleport.fahariyajamii.org:443 from `tsh config`
@@ -132,6 +132,7 @@ Contributing
 - Before anything is merged to `main` it has to be deployed first.
   In other words, the pre-merge step involves the deployment of any playbooks changed by the Merge Request.
   This ensures that `main` always reflect the same reality as what's in servers.
+- All modules and plugins should be specified using their fully-qualified collection name (FQCN). See [here](https://docs.ansible.com/ansible/latest/porting_guides/porting_guide_2.10.html#ansible-2-10-porting-guide) for details.
 
 *Exceptions to these rules can be granted during PR review with good reason*
 

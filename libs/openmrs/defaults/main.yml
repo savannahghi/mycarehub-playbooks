@@ -1,6 +1,8 @@
 ---
 
-openmrs_config_dir_name: .OpenMRS
+# The folder used by OpenMRS for external data storage.
+# For more details, see here: https://wiki.openmrs.org/display/docs/Application+Data+Directory
+openmrs_data_dir: "{{ openmrs_servlet_container_working_dir }}/.OpenMRS" 
 openmrs_db_host: localhost
 openmrs_db_name: openmrs
 openmrs_db_port: 3306

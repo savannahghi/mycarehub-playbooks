@@ -44,7 +44,7 @@
     state: present
   tags: ["openmrs"]
 
-- name: Create OpenMRS configuration and modules directories
+- name: Create OpenMRS data directory and it's sub-directories
   ansible.builtin.file:
     group: "{{ openmrs_servlet_container_user_group }}"
     mode: "ug=rwx,o=rx"
@@ -53,8 +53,8 @@
     state: directory
   become: yes
   loop:
-    - "{{ openmrs_servlet_container_working_dir }}/{{ openmrs_config_dir_name }}"
-    - "{{ openmrs_servlet_container_working_dir }}/{{ openmrs_config_dir_name }}/modules"
+    - "{{ openmrs_data_dir }}"
+    - "{{ openmrs_data_dir }}/modules"
   tags: ["openmrs"]
 
 - name: Configure OpenMRS

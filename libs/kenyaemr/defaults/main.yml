@@ -1,0 +1,28 @@
+---
+
+kenyaemr_db_host: localhost
+kenyaemr_db_port: 3306
+kenyaemr_db_socket_file_path: /tmp/mysqld.sock
+
+# An assumption is made the associated KenyaEMR databases share 
+# these set of credentials.
+kenyaemr_db_user: openmrs_admin
+kenyaemr_db_user_password: ""
+
+# Before changing this to a newer version, always test that everything works
+# on test servers before running this on production servers. This is
+# especially important since this release bundles appear to be created by hand
+# and are not always consistent from release to release.
+kenyaemr_dist_download_url: "https://github.com/palladiumkenya/kenyahmis-releases/releases/download/v49/KenyaEMR_18.1.2.zip"
+
+# This flag when set will force the current run to be treated as a fresh
+# installation. This will result to the existing KenyaEMR and tools databases
+# being overridden using the supplied db dumps.
+kenyaemr_is_fresh_install: false
+
+# The path to the OpenMRS data directory as defined here: https://wiki.openmrs.org/display/docs/Application+Data+Directory
+kenyaemr_openmrs_data_dir: ""
+
+kenyaemr_preferred_temp_dir: "/tmp"
+kenyaerm_servlet_container_user: ""
+kenyaerm_servlet_container_user_group: ""

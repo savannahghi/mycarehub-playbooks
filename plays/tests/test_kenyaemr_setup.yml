@@ -1,0 +1,76 @@
+---
+
+- name: Test KenyaEMR setup
+  hosts: test_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
+      become: yes
+    - name: Install JDK 8 and PyMySQL
+      ansible.builtin.apt:
+        name: [openjdk-8-jdk, python3-pymysql]
+        state: latest
+        update_cache: yes
+      become: yes
+    - name: Add CATALINA_BASE user_group
+      ansible.builtin.group: name={{ app_user_group }} state=present system=yes
+      become: yes
+    - name: Add CATALINA_BASE user
+      ansible.builtin.user: create_home=yes group={{ app_user_group }} home=/home/{{ app_user }} name={{ app_user }} shell=/bin/bash state=present system=yes
+      become: yes
+  post_tasks:
+    - name: Deploy successful, remove lock_file
+      ansible.builtin.file: path={{ lock_file_path }} state=absent
+      become: yes
+  roles:
+    - common
+    - role: tomcat
+      vars:
+        tomcat_installation_dir: "{{ catalina_home }}"
+    - role: tomcat_catalina_base
+      vars:
+        catalina_base_java_home: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+        catalina_base_owning_group: "{{ app_user_group }}"
+        catalina_base_owning_user: "{{ app_user }}"
+        catalina_base_root_dir: "{{ catalina_base }}"
+        catalina_base_server_listening_port: 7070
+        catalina_base_service_name: test_tomcat
+        catalina_base_tomcat_root_dir: "{{ catalina_home }}"
+        catalina_base_tomcat_working_dir: "{{ server_working_dir }}"
+    - role: openmrs
+      vars:
+        openmrs_data_dir: "{{ app_data_dir }}"
+        openmrs_db_name: "{{ app_db_name }}"
+        openmrs_db_user: "{{ app_db_user }}"
+        openmrs_db_user_password: "{{ app_db_user_password }}"
+        openmrs_servlet_container_app_base_dir: "{{ catalina_base }}/webapps"
+        openmrs_servlet_container_user: "{{ app_user }}"
+        openmrs_servlet_container_user_group: "{{ app_user_group }}"
+        openmrs_servlet_container_working_dir: "{{ server_working_dir }}"
+
+  strategy: free
+  vars:
+    app_data_dir: "{{ server_working_dir }}/.OpenMRS"
+    app_db_name: openmrs
+    app_db_user: openmrs_admin
+    app_db_user_password: insecure_test_password
+    app_user: tomcat
+    app_user_group: tomcat
+    catalina_base: /home/{{ app_user }}/test_apache_tomcat
+    catalina_home: /opt/apache_tomcat
+    deploy_user: deploy
+    force_ignore_lock: "{{ force_ignore_lock }}"
+    lock_file_path: /tmp/ansible-test-kenyaemr-setup.lock
+    server_working_dir: "{{ catalina_base }}"
+
+  tasks: 
+    - name: Install and set up The KenyaEMR distribution
+      import_role:
+        name: kenyaemr
+      vars:
+        kenyaemr_db_user: "{{ app_db_user }}"
+        kenyaemr_db_user_password: "{{ app_db_user_password }}"
+        kenyaemr_openmrs_data_dir: "{{ app_data_dir }}"
+        kenyaemr_servlet_container_user: "{{ app_user }}"
+        kenyaemr_servlet_container_user_group: "{{ app_user_group }}"
+      tags: ["test_kenyaemr"]

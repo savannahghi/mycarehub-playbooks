@@ -1,0 +1,84 @@
+---
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
+  loop:
+    - { name: kenyaemr_db_user_password, value: "{{ kenyaemr_db_user_password }}" }
+    - { name: kenyaemr_openmrs_data_dir, value: "{{ kenyaemr_openmrs_data_dir }}" }
+    - { name: kenyaemr_servlet_container_user, value: "{{ kenyaemr_servlet_container_user }}" }
+    - { name: kenyaemr_servlet_container_user_group, value: "{{ kenyaemr_servlet_container_user_group }}" }
+  when: not item.value
+  tags: ["kenyaemr"]
+
+- name: Download the KenyaEMR distribution archive
+  ansible.builtin.get_url:
+    dest: "{{ kenyaemr_preferred_temp_dir }}"
+    force: yes
+    timeout: 10
+    url: "{{ kenyaemr_dist_download_url }}"
+  become: yes
+  register: kenyaemr_dist_download_data
+  tags: ["kenyaemr"]
+
+- name: Unarchive KenyaEMR distribution
+  ansible.builtin.unarchive:
+    dest: "{{ kenyaemr_preferred_temp_dir }}"
+    keep_newer: no  # Overwrite everything
+    remote_src: yes
+    src: "{{ kenyaemr_dist_download_data.dest }}"
+  become: yes
+  tags: ["kenyaemr"]
+
+- name: Install KenyaEMR distribution
+  ansible.builtin.copy:
+    dest: "{{ kenyaemr_openmrs_data_dir }}/modules/"
+    directory_mode: "ug=rwx,o=rx"
+    group: "{{ kenyaemr_servlet_container_user_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ kenyaemr_servlet_container_user }}"
+    remote_src: yes
+    src: "{{ kenyaemr_preferred_temp_dir }}/{{ (kenyaemr_dist_download_data.dest | ansible.builtin.basename | ansible.builtin.splitext)[0] }}/modules/"
+  become: yes
+  tags: ["kenyaemr"]
+
+- name: Set up KenyaEMR and associated tools databases if fresh installation
+  block:
+    - name: Create KenyaEMR datatool and KenyaEMR ETL databases
+      community.mysql.mysql_db:
+        login_password: "{{ kenyaemr_db_user_password }}"
+        login_user: "{{ kenyaemr_db_user }}"
+        name: "{{ item }}"
+        state: present
+      loop:
+        - kenyaemr_datatools
+        - kenyaemr_etl
+
+    - name: Copy KenyaEMR and associated tools dbs dumps to remote machine
+      ansible.builtin.copy:
+        backup: no
+        dest: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_dbs.tar.xz"
+        remote_src: no
+        src: kenyaemr_dbs.tar.xz
+
+    - name: Unarchive the KenyaEMR and associated tools dbs dumps
+      ansible.builtin.unarchive:
+        dest: "{{ kenyaemr_preferred_temp_dir }}"
+        keep_newer: no
+        remote_src: yes
+        src: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_dbs.tar.xz"
+
+    - name: Restore KenyaEMR and associated tools db dumps
+      community.mysql.mysql_db:
+        login_password: "{{ kenyaemr_db_user_password }}"
+        login_user: "{{ kenyaemr_db_user }}"
+        name: "{{ item.db_name }}"
+        state: import
+        target: "{{ item.db_dump_file }}"
+      loop:
+        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_datatools.sql", db_name: kenyaemr_datatools }
+        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_etl.sql", db_name: kenyaemr_etl }
+        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/openmrs.sql", db_name: openmrs }
+  become: yes
+  tags: ["kenyaemr"]
+  when: kenyaemr_is_fresh_install

@@ -1,0 +1,69 @@
+---
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
+  loop:
+    - { name: apache_httpd_server_user, value: "{{ apache_httpd_server_user }}" }
+    - { name: apache_httpd_server_user_group, value: "{{ apache_httpd_server_user_group }}" }
+  tags: ["apache_httpd"]
+  when: not item.value
+
+- name: Install Apache HTTP server
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  become: yes
+  tags: ["apache_httpd"]
+
+- name: Shutdown the default Apache HTTP service
+  ansible.builtin.systemd_service:
+    enabled: false
+    force: yes
+    name: "{{ apache_httpd_default_apache_http_service_name }}"
+    scope: system
+    state: stopped
+  become: yes
+  tags: ["apache_httpd"]
+  when: apache_httpd_stop_default_apache_service
+
+- name: Create server instance directories
+  ansible.builtin.file:
+    group: "{{ apache_httpd_server_user_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ apache_httpd_server_user }}"
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ apache_httpd_server_root }}"
+    - "{{ apache_httpd_config_root }}"
+    - "{{ apache_httpd_config_extras }}"
+    - "{{ apache_httpd_document_root }}"
+    - "{{ apache_httpd_logs_root }}"
+  become: yes
+  tags: ["apache_httpd"]
+
+- name: Configure the Apache HTTP server instance
+  ansible.builtin.template:
+    backup: yes
+    dest: "{{ apache_httpd_config_root }}"
+    force: yes
+    mode: "ug=rw,o=r"
+    group: "{{ apache_httpd_server_user_group }}"
+    owner: "{{ apache_httpd_server_user }}"
+    src: "{{ item }}"
+  loop:
+    - httpd.conf
+    - ports.conf
+  become: yes
+  tags: ["apache_httpd"]
+
+- name: Set up systemd service for the Apache HTTP server instance
+  ansible.builtin.template:
+    backup: no
+    dest: "{{ apache_httpd_systemd_unit_file_load_path }}/{{ apache_httpd_instance_name }}.service"
+    force: yes
+    src: apache_httpd.service
+  become: yes
+  tags: ["apache_httpd"]

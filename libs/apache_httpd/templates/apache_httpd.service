@@ -1,0 +1,22 @@
+[Unit]
+Description=The Apache HTTP Server({{ apache_httpd_instance_name }})
+After=network.target remote-fs.target nss-lookup.target
+Documentation=https://httpd.apache.org/docs/2.4/
+
+[Service]
+Type=forking
+User={{ apache_httpd_server_user }}
+Group={{ apache_httpd_server_user_group }}
+Environment="APACHE_CONFDIR={{ apache_httpd_config_root }}"
+Environment="APACHE_PID_FILE={{ apache_httpd_runtime_dir }}/{{ apache_httpd_instance_name }}.pid"
+Environment="APACHE_RUN_DIR={{ apache_httpd_runtime_dir }}"
+Environment="APACHE_STARTED_BY_SYSTEMD=true"
+Environment="APACHE_SYSTEMD_SERVICE={{ apache_httpd_instance_name }}"
+ExecStart=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k start
+ExecStop=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k stop
+ExecReload=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k graceful
+PrivateTmp=true
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,36 @@
+---
+
+apache_httpd_default_apache_http_service_name: apache2.service
+apache_httpd_default_server_modules_dir: /etc/apache2/mods-enabled
+apache_httpd_include_default_server_modules: true
+
+# Used to give the created systemd unit a name and as the default server
+# root directory name
+apache_httpd_instance_name: apache_httpd
+
+# The address and/or port that the server instance will listen on.
+apache_httpd_listen_address: "0.0.0.0:9090"
+
+# Valid value are listed here: https://httpd.apache.org/docs/2.4/mod/core.html#loglevel
+apache_httpd_log_level: info
+
+# This will not be automatically created if it doesn't exist.
+apache_httpd_runtime_dir: /tmp
+
+# Apache HTTP Server layout
+# This adapted from here: https://cwiki.apache.org/confluence/display/HTTPD/DistrosDefaultLayout
+apache_httpd_config_extras: "{{ apache_httpd_config_root }}/config.d"
+apache_httpd_config_root: "{{ apache_httpd_server_root }}/config"
+apache_httpd_document_root: "{{ apache_httpd_server_root }}/htdocs"
+apache_httpd_logs_root: "{{ apache_httpd_server_root }}/logs"
+apache_httpd_server_root: /home/{{ apache_httpd_server_user }}/{{ apache_httpd_instance_name }}
+
+
+# The user and user group that runs the target Apache HTTP server instance.
+# This user or group should have read and write permissions to the directories
+# needed to run the server.
+apache_httpd_server_user: ""
+apache_httpd_server_user_group: ""
+
+apache_httpd_stop_default_apache_service: true
+apache_httpd_systemd_unit_file_load_path: /etc/systemd/system

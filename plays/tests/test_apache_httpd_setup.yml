@@ -1,0 +1,58 @@
+---
+
+- name: Test Apache Tomcat HTTP server setup
+  hosts: test_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
+      become: yes
+  post_tasks:
+    - name: Deploy successful, remove lock_file
+      ansible.builtin.file: path={{ lock_file_path }} state=absent
+      become: yes
+  roles:
+    - common
+  strategy: free
+  vars:
+    app_user: apache2
+    app_user_group: apache2
+    deploy_user: deploy
+    force_ignore_lock: false
+    lock_file_path: /tmp/ansible-test-apache-httpd-setup.lock
+
+  tasks:
+    - name: Add apache server user group 
+      ansible.builtin.group:
+        name: "{{ app_user_group }}"
+        state: present
+        system: yes
+      become: yes
+      tags: ["test_apache_httpd_setup"]
+
+    - name: Add apache server user
+      ansible.builtin.user:
+        comment: Custom user for running Apache HTTP Server
+        create_home: yes
+        group: "{{ app_user_group }}"
+        home: /home/{{ app_user }}
+        name: "{{ app_user }}"
+        shell: /bin/bash
+        state: present
+        system: yes
+      become: yes
+      tags: ["test_apache_httpd_setup"]
+
+    - name: Install and set up Apache HTTP server
+      import_role:
+        name: apache_httpd
+      vars:
+        apache_httpd_server_user: "{{ app_user }}"
+        apache_httpd_server_user_group: "{{ app_user_group }}"
+        catalina_base_java_home: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+        catalina_base_owning_group: "{{ app_user_group }}"
+        catalina_base_owning_user: "{{ app_user }}"
+        catalina_base_root_dir: /home/{{ app_user }}/test_apache_tomcat
+        catalina_base_server_listening_port: 7070
+        catalina_base_service_name: test_tomcat
+        catalina_base_tomcat_root_dir: "{{ catalina_home }}"
+      tags: ["test_apache_httpd_setup"]

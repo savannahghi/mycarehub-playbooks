@@ -37,10 +37,10 @@ sudo chmod a=rwx /var/log/ansible/hosts
 ```
 
 ### Working with Teleport Hosts
-Some of the hosts defined in the inventory are only accessible through a [Teleport server](https://goteleport.com/docs/). As such, special configuration for the Ansible control node is required. This can be achieved using the following steps:
-> Note: Unless specified otherwise, the instructions and examples from this section henceforth will use a Teleport server hosted at `https://test.teleport.fahariyajamii.org` and a Teleport user named `barakobama`.
+Some of the hosts defined in the inventory are only accessible through a [Teleport server](https://goteleport.com/docs/). As such, special configuration on the Ansible control node is required. This can be achieved using the following steps:
+> Note: Unless specified otherwise, the instructions and examples from this section henceforth will use a Teleport server hosted at `https://test.teleport.fahariyajamii.org`, a Teleport user named `barakobama` and a local user account *(on the control node)* named `barak`.
 - First, ensure you have Teleport installed on the control node. Check the Teleport [installation docs](https://goteleport.com/docs/installation/) on how to do that.
-- Ensure you have ample access to access the target hosts through Teleport. Use the following commands to check this:
+- Ensure you have ample access on the target hosts through Teleport. Use the following commands to check this:
   1. Login on Teleport from the terminal using the following command:
     ```bash
     tsh login --proxy=test.teleport.fahariyajamii.org --user=barakobama
@@ -50,13 +50,15 @@ Some of the hosts defined in the inventory are only accessible through a [Telepo
     tsh ls
     ```
     Ensure the hosts you aim to target are listed.
+
+    Note that this only tells you whether you have access to the target host but not whether you have sufficient privileges on the target host to run the desired playbooks. For this, check the playbook README and consult the Teleport admin.
 - Use the following command to generate a ssh config for Teleport:
   ```bash
   # NOTE: Before running this, ensure that the "~/.ssh/teleport" folder exists or create one if none exists.
   tsh config | sed 's/^Host/Match Host/' | sed '/Match Host/s/ /,/3' > ~/.ssh/teleport/ssh_config
   ```
 
-  Assuming that the Teleport server in use is hosted at `https://test.teleport.fahariyajamii.org`, the Teleport user is named `barakobama` and the local user account is named `barak`, the generated file `~/.ssh/teleport/ssh_config`, should looks like this:
+  Assuming that the Teleport server in use is hosted at `https://test.teleport.fahariyajamii.org`, the Teleport user is named `barakobama` and the local user account is named `barak`, the generated file `~/.ssh/teleport/ssh_config`, should look similar to this:
   ```cfg  
   #
   # Begin generated Teleport configuration for test.teleport.fahariyajamii.org:443 from `tsh config`

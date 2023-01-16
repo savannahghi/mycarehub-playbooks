@@ -1,7 +1,7 @@
 Install and Set up KenyaEMR
 ===========================
 
-This role installs and setups the OpenMRS-based EMR for the Kenya Ministry of Health(MoH).
+This role installs and sets up the OpenMRS-based EMR for the Kenya Ministry of Health(MoH).
 
 Prerequisites
 -------------

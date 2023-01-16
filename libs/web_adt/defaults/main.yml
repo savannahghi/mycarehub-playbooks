@@ -1,0 +1,23 @@
+---
+
+# This the location on the target Apache HTTP server instance from where files
+# are served.
+web_adt_apache_httpd_document_root: ""
+
+# The user and user_group that runs the target Apache HTTP server instance.
+# This user or user_group should also have permission to read and write on
+# the target server's document root directory.
+web_adt_apache_httpd_server_user: ""
+web_adt_apache_httpd_server_user_group: ""
+
+web_adt_db_host: localhost
+web_adt_db_name: testadt
+web_adt_db_port: 3306
+web_adt_db_socket_file_path: /tmp/mysqld.sock
+web_adt_db_user: ""
+web_adt_db_user_password: ""
+web_adt_db_user_privileges: '*.*:ALL,GRANT'
+
+web_adt_dist_download_url: "http://adt-test.nascop.org/ADTv4.0.1.zip"
+web_adt_is_fresh_install: false
+web_adt_preferred_temp_dir: "/tmp"

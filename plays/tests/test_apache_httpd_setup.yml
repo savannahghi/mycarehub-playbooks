@@ -47,12 +47,5 @@
         name: apache_httpd
       vars:
         apache_httpd_server_user: "{{ app_user }}"
-        apache_httpd_server_user_group: "{{ app_user_group }}"
-        catalina_base_java_home: /usr/lib/jvm/java-1.8.0-openjdk-amd64
-        catalina_base_owning_group: "{{ app_user_group }}"
-        catalina_base_owning_user: "{{ app_user }}"
-        catalina_base_root_dir: /home/{{ app_user }}/test_apache_tomcat
-        catalina_base_server_listening_port: 7070
-        catalina_base_service_name: test_tomcat
-        catalina_base_tomcat_root_dir: "{{ catalina_home }}"
+        apache_httpd_server_user_group: "{{ app_user_group }}" 
       tags: ["test_apache_httpd_setup"]

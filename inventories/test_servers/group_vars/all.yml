@@ -1,0 +1,12 @@
+---
+# serves nginx_certbot_deploy playbook.
+# ------------------------------------------------------------------------------------------
+certbot_email: "support@fahariyajamii.org"
+cloud_emr_server_domain: "{{ cloud.fahariyajamii.org }}"
+cloud_emr_server_domain_suffix: "*.cloud.fahariyajamii.org"
+cloud_emr_server_ssl_cert: "/etc/letsencrypt/live/{{ cloud_emr_server_domain }}/fullchain.pem"
+cloud_emr_server_ssl_key: "/etc/letsencrypt/live/{{ cloud_emr_server_domain }}/privkey.pem"
+cloud_emr_dns_credentials: "/root/.secrets/fyj-342011-cloud-emr-dns.json"
+# ------------------------------------------------------------------------------------------
+
+

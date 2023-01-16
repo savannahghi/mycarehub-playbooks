@@ -2,3 +2,6 @@
 test_facility_1 ansible_host=test_facility_1
 test_facility_2 ansible_host=test_facility_2
 test_facility_5 ansible_host=test_facility_5
+
+[central_server]
+central_server ansible_host=cloudemr-poc

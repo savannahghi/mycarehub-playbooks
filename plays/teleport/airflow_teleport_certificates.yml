@@ -3,7 +3,7 @@
 - hosts: sil_pipeline
   tasks:
       - name: "Generate new Teleport certificates for Airflow"
-        shell: "tctl auth sign --user=airflow --format=openssh --out=/tmp/airflow-teleport --ttl=480h --overwrite"
+        ansible.builtin.shell: "tctl auth sign --user=airflow --format=openssh --out=/tmp/airflow-teleport --ttl=480h --overwrite"
         delegate_to: 127.0.0.1
 
       - name: "Push the created certificates to Airflow server"
@@ -13,7 +13,7 @@
             owner: airflow
             group: airflow
             mode: '0600'
-        with_items:
+        loop:
             - /tmp/airflow-teleport
             - /tmp/airflow-teleport-cert.pub
         become: yes

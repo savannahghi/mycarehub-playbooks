@@ -1,0 +1,32 @@
+---
+# Tweak default nginx configs for cloud emr setup.
+
+- name: Create a directory /etc/nginx/cloud-emr-available if it does not exist
+  become: yes
+  ansible.builtin.file:
+    path: /etc/nginx/cloud-emr-available
+    state: directory
+    mode: "0755"
+  tags: ["nginx_site"]
+
+- name: Create a directory /etc/nginx/cloud-emr-enabled if it does not exist
+  become: yes
+  ansible.builtin.file:
+    path: /etc/nginx/cloud-emr-enabled
+    state: directory
+    mode: "0755"
+  tags: ["nginx_site"]
+
+- name: Replace the default nginx server config in /etc/nginx
+  become: yes
+  template:
+    backup: yes
+    force: yes
+    src: nginx.conf
+    dest: "/etc/nginx/nginx.conf"
+  tags: ["nginx_site"]
+
+- name: Restart nginx
+  ansible.builtin.service: name=nginx state=restarted
+  become: yes
+  tags: ["nginx_site"]

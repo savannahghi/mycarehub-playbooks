@@ -1,0 +1,23 @@
+server {
+  listen 80 default_server;
+  server_name _;
+
+  access_log /var/log/nginx/unknown.access.log;
+  error_log /var/log/nginx/unknown.error.log error;
+
+  return 444;
+}
+
+server {
+  listen 443 default_server;
+  server_name _;
+
+  access_log /var/log/nginx/unknownssl.access.log;
+  error_log /var/log/nginx/unknownssl.error.log error;
+
+  ssl_ciphers aNULL;
+  ssl_certificate {{ nginx_dummy_certs_dir }}/dummy.crt;
+  ssl_certificate_key {{ nginx_dummy_certs_dir }}/dummy.key;
+  return 444;
+}
+

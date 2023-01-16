@@ -1,0 +1,80 @@
+---
+
+- name: Install nginx
+  ansible.builtin.apt: name=nginx state=present
+  become: yes
+  tags: ["nginx"]
+
+- name: Activate nginx service
+  ansible.builtin.service: name=nginx state=started enabled=yes
+  become: yes
+  tags: ["nginx"]
+
+- name: Overwrite nginx default site
+  ansible.builtin.template:
+      src: nginx.default.site
+      dest: /etc/nginx/sites-available/default
+      owner: "root"
+      group: "root"
+      mode: "u=rw,g=rw,o=r"
+  become: yes
+  tags: ["nginx"]
+
+- name: Make directory for dummy certificates
+  ansible.builtin.file:
+      name: "{{ nginx_dummy_certs_dir }}"
+      state: directory
+      owner: "root"
+      group: "root"
+      mode: "u=rwx,g=rwx,o=rx"
+  become: yes
+  tags: ["nginx"]
+
+- name: Copy dummy certs
+  ansible.builtin.copy:
+      src: "{{ item.src }}"
+      dest: "{{ nginx_dummy_certs_dir }}/{{ item.dest }}"
+      owner: "root"
+      group: "root"
+      mode: "u=rw,g=rw,o=r"
+  loop:
+      - {src: "nginx.dummy.crt", dest: "dummy.crt"}
+      - {src: "nginx.dummy.key", dest: "dummy.key"}
+  become: yes
+  tags: ["nginx"]
+
+- name: Ensure default site is enabled
+  ansible.builtin.file:
+      src: "/etc/nginx/sites-available/default"
+      dest: "/etc/nginx/sites-enabled/default"
+      state: link
+      owner: "root"
+      group: "root"
+      mode: "u=rw,g=rw,o=r"
+  become: yes
+  tags: ["nginx"]
+
+- name: Overwrite the default mimetypes file
+  ansible.builtin.copy:
+      src: "nginx.default.mimetypes"
+      dest: "/etc/nginx/mime.types"
+      owner: "root"
+      group: "root"
+      mode: "u=rw,g=rw,o=r"
+  become: yes
+  notify:
+      - confirm nginx config
+      - restart nginx
+  tags: ["nginx"]
+
+- name: Overwrite the default config
+  ansible.builtin.template:
+      src: nginx.default.conf
+      dest: /etc/nginx/nginx.conf
+      owner: "root"
+      group: "root"
+      mode: "u=rw,g=rw,o=r"
+  become: yes
+  notify:
+      - restart nginx
+  tags: ["nginx"]

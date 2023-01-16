@@ -28,10 +28,10 @@
   tasks:
 
       - name: "Check if required variables have been defined"
-        fail:
+        ansible.builtin.fail:
             msg: "{{ item.name }} is not defined"
         when: not item.value
-        with_items:
+        loop:
             - { name: "teleport_master_ca_pin", value: "{{ teleport_master_ca_pin }}" }
             - { name: "teleport_node_auth_token", value: "{{ teleport_node_auth_token }}" }
             - { name: "teleport_node_env", value: "{{ teleport_node_env }}" }

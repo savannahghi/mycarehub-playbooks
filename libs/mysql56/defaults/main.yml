@@ -4,6 +4,11 @@ mysql56_config_dir: /etc/mysql
 mysql56_config_fragments_dir: /etc/mysql/conf.d
 mysql56_data_dir: /var/lib/mysql/data
 mysql56_installation_base_dir: /usr/local/mysql
+
+# If you set this to true, also remember to stop the running MySQL 5.6 Server
+# on the target host otherwise, you may encounter failures while running the
+# role.
+mysql56_is_fresh_install: false
 mysql56_server_port: 3306
 mysql56_server_runtime_dir: /tmp
 mysql56_system_path_dir: /usr/local/bin

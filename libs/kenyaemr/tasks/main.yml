@@ -46,7 +46,9 @@
   block:
     - name: Create KenyaEMR datatool and KenyaEMR ETL databases
       community.mysql.mysql_db:
+        login_host: "{{ kenyaemr_db_host }}"
         login_password: "{{ kenyaemr_db_user_password }}"
+        login_port: "{{ kenyaemr_db_port }}"
         login_user: "{{ kenyaemr_db_user }}"
         name: "{{ item }}"
         state: present
@@ -70,7 +72,9 @@
 
     - name: Restore KenyaEMR and associated tools db dumps
       community.mysql.mysql_db:
+        login_host: "{{ kenyaemr_db_host }}"
         login_password: "{{ kenyaemr_db_user_password }}"
+        login_port: "{{ kenyaemr_db_port }}"
         login_user: "{{ kenyaemr_db_user }}"
         name: "{{ item.db_name }}"
         state: import

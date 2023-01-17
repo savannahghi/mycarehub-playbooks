@@ -69,12 +69,15 @@
   become: yes
   tags: ["mysql56"]
 
+# Make sure you shutdown the MySQL 5.6 server on the target host(if one
+# exists) before running this task or else the task will fail.
 - name: Initialize MySQL data directory
   ansible.builtin.command:
     chdir: "{{ mysql56_installation_base_dir }}"
     cmd: scripts/mysql_install_db --user={{ mysql56_user|quote }} --datadir={{ mysql56_data_dir|quote }}
   become: yes
   tags: ["mysql56"]
+  when: mysql56_is_fresh_install
 
 - name: Copy global MySQL config
   ansible.builtin.template:

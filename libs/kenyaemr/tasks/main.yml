@@ -82,7 +82,7 @@
       loop:
         - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_datatools.sql", db_name: kenyaemr_datatools }
         - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_etl.sql", db_name: kenyaemr_etl }
-        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/openmrs.sql", db_name: openmrs }
+        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/openmrs.sql", db_name: "{{ kenyaemr_db_name }}" }
   become: yes
   tags: ["kenyaemr"]
   when: kenyaemr_is_fresh_install

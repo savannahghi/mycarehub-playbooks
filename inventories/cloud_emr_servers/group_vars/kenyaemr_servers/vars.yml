@@ -1,0 +1,13 @@
+---
+
+kenyaemr_application_catalina_base: "/home/{{ kenyaemr_application_user }}/apache_tomcat"
+kenyaemr_application_catalina_home: /opt/apache_tomcat
+kenyaemr_application_database_name: openmrs
+kenyaemr_application_database_user: openmrs_admin
+kenyaemr_application_database_user_password: "{{ vault_kenyaemr_application_database_user_password }}"
+kenyaemr_application_name: kenyaemr
+kenyaemr_application_server_data_dir: "{{ kenyaemr_application_server_working_dir }}/.OpenMRS"
+kenyaemr_application_server_listening_port: 7070
+kenyaemr_application_server_working_dir: "{{ kenyaemr_application_catalina_base }}"
+kenyaemr_application_user: kenyaemr
+kenyaemr_application_user_group: kenyaemr

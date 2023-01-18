@@ -1,0 +1,15 @@
+[kenyaemr_servers]
+12867.cloud.fyj.org
+13052.cloud.fyj.org
+14200.cloud.fyj.org
+15560.cloud.fyj.org
+
+[web_adt_servers]
+12867.cloud.fyj.org
+13052.cloud.fyj.org
+14200.cloud.fyj.org
+15560.cloud.fyj.org
+
+[cloud_emr_servers:children]
+kenyaemr_servers
+web_adt_servers

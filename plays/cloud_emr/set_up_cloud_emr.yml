@@ -1,0 +1,5 @@
+---
+
+- import_playbook: install_mysql56.yml
+- import_playbook: install_kenyaemr.yml
+- import_playbook: install_web_adt.yml

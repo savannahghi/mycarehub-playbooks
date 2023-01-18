@@ -1,0 +1,9 @@
+---
+
+web_adt_application_database_name: web_adt
+web_adt_application_database_user: web_adt_admin
+web_adt_application_database_user_password: "{{ vault_web_adt_application_database_user_password }}"
+web_adt_application_name: web_adt
+web_adt_application_server_listening_address: "0.0.0.0:9090"
+web_adt_application_user: web_adt
+web_adt_application_user_group: web_adt

@@ -6,6 +6,7 @@ kenyaemr_db_socket_file_path: /tmp/mysqld.sock
 
 # An assumption is made the associated KenyaEMR databases share 
 # these set of credentials.
+kenyaemr_db_name: openmrs
 kenyaemr_db_user: openmrs_admin
 kenyaemr_db_user_password: ""
 

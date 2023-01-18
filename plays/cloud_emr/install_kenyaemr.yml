@@ -1,0 +1,72 @@
+---
+
+- name: Install and set up KenyaEMR on an Ubuntu 20.04 LTS server
+  hosts: kenyaemr_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present system=yes
+      become: yes
+    - name: Install JDK 8 and PyMySQL
+      ansible.builtin.apt:
+        name: [openjdk-8-jdk, python3-pymysql]
+        state: latest
+        update_cache: yes
+      become: yes
+    - name: Add application user_group
+      ansible.builtin.group: name={{ kenyaemr_application_user_group }} state=present system=yes
+      become: yes
+    - name: Add application user
+      ansible.builtin.user: create_home=yes group={{ kenyaemr_application_user_group }} home=/home/{{ kenyaemr_application_user }} name={{ kenyaemr_application_user }} shell=/bin/bash state=present system=yes
+      become: yes
+  roles:
+    - common
+    - role: tomcat
+      vars:
+        tomcat_installation_dir: "{{ kenyaemr_application_catalina_home }}"
+    - role: tomcat_catalina_base
+      vars:
+        catalina_base_java_home: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+        catalina_base_owning_group: "{{ kenyaemr_application_user_group }}"
+        catalina_base_owning_user: "{{ kenyaemr_application_user }}"
+        catalina_base_root_dir: "{{ kenyaemr_application_catalina_base }}"
+        catalina_base_server_listening_port: "{{ kenyaemr_application_server_listening_port }}"
+        catalina_base_service_name: "{{ kenyaemr_application_name }}"
+        catalina_base_tomcat_root_dir: "{{ kenyaemr_application_catalina_home }}"
+        catalina_base_tomcat_working_dir: "{{ kenyaemr_application_server_working_dir }}"
+    - role: openmrs
+      vars:
+        openmrs_data_dir: "{{ kenyaemr_application_server_data_dir }}"
+        openmrs_db_name: "{{ kenyaemr_application_database_name }}"
+        openmrs_db_user: "{{ kenyaemr_application_database_user }}"
+        openmrs_db_user_password: "{{ kenyaemr_application_database_user_password }}"
+        openmrs_servlet_container_app_base_dir: "{{ kenyaemr_application_catalina_base }}/webapps"
+        openmrs_servlet_container_user: "{{ kenyaemr_application_user }}"
+        openmrs_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
+        openmrs_servlet_container_working_dir: "{{ kenyaemr_application_server_working_dir }}"
+  strategy: free
+  vars:
+    deploy_user: deploy
+  
+  tasks:
+    - name: Install and set up The KenyaEMR distribution
+      import_role:
+        name: kenyaemr
+      vars:
+        kenyaemr_db_name: "{{ kenyaemr_application_database_name }}"
+        kenyaemr_db_user: "{{ kenyaemr_application_database_user }}"
+        kenyaemr_db_user_password: "{{ kenyaemr_application_database_user_password }}"
+        kenyaemr_openmrs_data_dir: "{{ kenyaemr_application_server_working_dir }}"
+        kenyaemr_servlet_container_user: "{{ kenyaemr_application_user }}"
+        kenyaemr_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
+      tags: ["kenyaemr_application"]
+    
+    - name: Enable and restart KenyaEMR application service
+      ansible.builtin.systemd_service:
+        daemon_reload: yes
+        enabled: yes
+        force: yes
+        name: "{{ kenyaemr_application_name }}.service"
+        scope: system
+        state: restarted
+      become: yes
+      tags: ["kenyaemr_application"]

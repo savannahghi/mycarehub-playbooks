@@ -1,0 +1,15 @@
+---
+
+- name: Install and set up MySQL 5.6 Community server on an Ubuntu 20.04 LTS
+  hosts: cloud_emr_servers
+  pre_tasks:
+    - name: Create deploy user
+      ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present system=yes
+      become: yes
+  roles:
+    - common
+    - mysql56
+  strategy: free
+  vars:
+    deploy_user: deploy
+ 

@@ -17,10 +17,9 @@
     deploy_user: deploy
     force_ignore_lock: "{{ force_ignore_lock }}"
     lock_file_path: /tmp/ansible-test-mysql56-deploy.lock
-    teleport_config_path: /etc/teleport.yaml
 
   tasks:
-    - name: Install and set up MySQL 5.6 Comminity Server
+    - name: Install and set up MySQL 5.6 Community Server
       import_role:
         name: mysql56
       tags: ["test_mysql56"]

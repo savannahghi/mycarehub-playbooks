@@ -29,7 +29,10 @@
       import_role:
         name: web_adt
       vars:
+        web_adt_apache_httpd_config_extras_dir: "{{ apache_httpd_config_extras }}"
         web_adt_apache_httpd_document_root: "{{ apache_httpd_document_root }}"
+        web_adt_apache_httpd_listen_address: "{{ apache_httpd_listen_address }}"
+        web_adt_apache_httpd_logs_root: "{{ apache_httpd_logs_root }}"
         web_adt_apache_httpd_server_user: "{{ web_adt_application_user }}"
         web_adt_apache_httpd_server_user_group: "{{ web_adt_application_user_group }}"
         web_adt_db_name: "{{ web_adt_application_database_name }}"

@@ -4,7 +4,10 @@
   ansible.builtin.fail:
     msg: "'{{ item.name }}' is not defined"
   loop:
+    - { name: web_adt_apache_httpd_config_extras_dir, value: "{{ web_adt_apache_httpd_config_extras_dir }}" }
     - { name: web_adt_apache_httpd_document_root, value: "{{ web_adt_apache_httpd_document_root }}" }
+    - { name: web_adt_apache_httpd_listen_address, value: "{{ web_adt_apache_httpd_listen_address }}" }
+    - { name: web_adt_apache_httpd_logs_root, value: "{{ web_adt_apache_httpd_logs_root }}" }
     - { name: web_adt_apache_httpd_server_user, value: "{{ web_adt_apache_httpd_server_user }}" }
     - { name: web_adt_apache_httpd_server_user_group, value: "{{ web_adt_apache_httpd_server_user_group }}" }
     - { name: web_adt_db_user, value: "{{ web_adt_db_user }}" }
@@ -91,7 +94,7 @@
   become: yes
   tags: ["web_adt"]
 
-- name: Configure WebADT
+- name: Overwrite hardcoded database login details
   ansible.builtin.lineinfile:
     backup: no
     create: no
@@ -109,6 +112,24 @@
     - { match: "'password' => 'root'",           result: "        'password' => '{{ web_adt_db_user_password }}'," }
     - { match: "'port' => 3307",                 result: "        'port' => {{ web_adt_db_port }}," }
     - { match: "'username' => 'root'",           result: "        'username' => '{{ web_adt_db_user }}'," }
+  become: yes
+  tags: ["web_adt"]
+
+- name: Add WebADT specific server configuration
+  ansible.builtin.template:
+    backup: yes
+    dest: "{{ web_adt_apache_httpd_config_extras_dir }}"
+    force: yes
+    mode: "ug=rw,o=r"
+    group: "{{ web_adt_apache_httpd_server_user_group }}"
+    owner: "{{ web_adt_apache_httpd_server_user }}"
+    src: web_adt_httpd.conf
+  become: yes
+  tags: ["web_adt"]
+
+- name: Enable Apache rewrite module (mod_rewrite)
+  ansible.builtin.command:
+    cmd: a2enmod rewrite
   become: yes
   tags: ["web_adt"]
 

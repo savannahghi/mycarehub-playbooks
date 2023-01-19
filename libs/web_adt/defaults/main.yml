@@ -1,8 +1,12 @@
 ---
 
+web_adt_apache_httpd_config_extras_dir: ""
+
 # This the location on the target Apache HTTP server instance from where files
 # are served.
 web_adt_apache_httpd_document_root: ""
+web_adt_apache_httpd_listen_address: ""
+web_adt_apache_httpd_logs_root: ""
 
 # The user and user_group that runs the target Apache HTTP server instance.
 # This user or user_group should also have permission to read and write on

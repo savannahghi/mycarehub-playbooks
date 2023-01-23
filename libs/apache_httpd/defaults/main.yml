@@ -14,8 +14,13 @@ apache_httpd_listen_address: "0.0.0.0:9090"
 # Valid value are listed here: https://httpd.apache.org/docs/2.4/mod/core.html#loglevel
 apache_httpd_log_level: info
 
-# This will not be automatically created if it doesn't exist.
-apache_httpd_runtime_dir: /tmp
+# These directories will be created by the `apache2ctl` script.
+apache_httpd_lock_dir: /var/lock/{{ apache_httpd_instance_name }}
+
+# This will be created by systemd and must be relative to "/run/"
+# (or "/var/run/" on Ubuntu) and must not include "..".
+# For mode details, see: https://www.freedesktop.org/software/systemd/man/systemd.exec.html#RuntimeDirectory=
+apache_httpd_runtime_dir: "{{ apache_httpd_instance_name }}"
 
 # Apache HTTP Server layout
 # This adapted from here: https://cwiki.apache.org/confluence/display/HTTPD/DistrosDefaultLayout
@@ -23,8 +28,11 @@ apache_httpd_config_extras: "{{ apache_httpd_config_root }}/config.d"
 apache_httpd_config_root: "{{ apache_httpd_server_root }}/config"
 apache_httpd_document_root: "{{ apache_httpd_server_root }}/htdocs"
 apache_httpd_logs_root: "{{ apache_httpd_server_root }}/logs"
-apache_httpd_server_root: /home/{{ apache_httpd_server_user }}/{{ apache_httpd_instance_name }}
+apache_httpd_server_root: /home/{{ apache_httpd_server_user }}/apache_httpd
 
+# The url to the server's mod_status status page.  If the mod is not enabled
+# or present, then status or fullstatus will not work.
+apache_httpd_status_url: http://localhost:9090/server-status
 
 # The user and user group that runs the target Apache HTTP server instance.
 # This user or group should have read and write permissions to the directories

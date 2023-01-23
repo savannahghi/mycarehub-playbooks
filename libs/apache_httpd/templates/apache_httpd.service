@@ -7,16 +7,27 @@ Documentation=https://httpd.apache.org/docs/2.4/
 Type=forking
 User={{ apache_httpd_server_user }}
 Group={{ apache_httpd_server_user_group }}
+
+# The "APACHE_RUN_DIR" and "APACHE_PID_FILE" are dependent on the runtime
+# directory of the service ("{{ apache_httpd_runtime_dir }}") being created
+# relative to "/var/run/". If that's not the case, change the values
+# accordingly.
+# Consult your target system's "systemd.exec(5)" manual to be sure.
 Environment="APACHE_CONFDIR={{ apache_httpd_config_root }}"
-Environment="APACHE_PID_FILE={{ apache_httpd_runtime_dir }}/{{ apache_httpd_instance_name }}.pid"
-Environment="APACHE_RUN_DIR={{ apache_httpd_runtime_dir }}"
+Environment="APACHE_LOCK_DIR={{ apache_httpd_lock_dir }}"
+Environment="APACHE_PID_FILE=/var/run/{{ apache_httpd_runtime_dir }}/{{ apache_httpd_instance_name }}.pid"
+Environment="APACHE_RUN_DIR=/var/run/{{ apache_httpd_runtime_dir }}"
+Environment="APACHE_RUN_GROUP={{ apache_httpd_server_user_group }}"
+Environment="APACHE_RUN_USER={{ apache_httpd_server_user }}"
 Environment="APACHE_STARTED_BY_SYSTEMD=true"
+Environment="APACHE_STATUS_URL={{ apache_httpd_status_url }}"
 Environment="APACHE_SYSTEMD_SERVICE={{ apache_httpd_instance_name }}"
-ExecStart=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k start
-ExecStop=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k stop
-ExecReload=/usr/sbin/apachectl -f {{ apache_httpd_config_root }}/httpd.conf -k graceful
+ExecStart=/usr/sbin/apache2ctl -f {{ apache_httpd_config_root }}/httpd.conf -k start
+ExecStop=/usr/sbin/apache2ctl -f {{ apache_httpd_config_root }}/httpd.conf -k stop
+ExecReload=/usr/sbin/apache2ctl -f {{ apache_httpd_config_root }}/httpd.conf -k graceful
 PrivateTmp=true
 Restart=on-abort
+RuntimeDirectory={{ apache_httpd_runtime_dir }}
 
 [Install]
 WantedBy=multi-user.target

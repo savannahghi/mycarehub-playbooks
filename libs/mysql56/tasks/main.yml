@@ -8,7 +8,7 @@
       - libncurses5
       - tar
     state: present
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Add MySQL user group
@@ -16,7 +16,7 @@
     name: "{{ mysql56_user_group }}"
     state: present
     system: yes
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Add MySQL user
@@ -27,7 +27,7 @@
     shell: /bin/false
     state: present
     system: yes
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Create MySQL config, installation, data and other essential directories
@@ -37,7 +37,7 @@
     owner: "{{ mysql56_user }}"
     path: "{{ item }}"
     state: directory
-  become: yes
+  become: true
   loop:
     - "{{ mysql56_config_dir }}"
     - "{{ mysql56_config_fragments_dir }}"
@@ -52,7 +52,7 @@
     force: no
     timeout: 10
     url: "{{ mysql56_download_url }}"
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Unarchive and Install MySQL 5.6 Community Server
@@ -66,7 +66,7 @@
     owner: "{{ mysql56_user }}"
     remote_src: yes
     src: "{{ mysql56_temp_download_dir }}/mysql56_community_server.tar.gz"
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 # Make sure you shutdown the MySQL 5.6 server on the target host(if one
@@ -75,7 +75,7 @@
   ansible.builtin.command:
     chdir: "{{ mysql56_installation_base_dir }}"
     cmd: scripts/mysql_install_db --user={{ mysql56_user|quote }} --datadir={{ mysql56_data_dir|quote }}
-  become: yes
+  become: true
   tags: ["mysql56"]
   when: mysql56_is_fresh_install
 
@@ -88,7 +88,7 @@
     mode: "ug=rw,o=r"
     owner: "{{ mysql56_user }}"
     src: my.cnf
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Get all MySQL binary files
@@ -100,7 +100,7 @@
     patterns:
       - "*"
     use_regex: no
-  become: yes
+  become: true
   register: mysql_bin_files
   tags: ["mysql56"]
 
@@ -112,7 +112,7 @@
     path: "{{ mysql56_system_path_dir }}/{{ item.path | ansible.builtin.basename }}"
     src: "{{ item.path }}"
     state: link
-  become: yes
+  become: true
   loop: "{{ mysql_bin_files.files }}"
   tags: ["mysql56"]
 
@@ -125,7 +125,7 @@
     owner: root
     remote_src: yes
     src: "{{ mysql56_installation_base_dir }}/support-files/mysql.server"
-  become: yes
+  become: true
   tags: ["mysql56"]
 
 - name: Enable and start MySQL service
@@ -133,5 +133,5 @@
     enabled: true
     name: mysql
     state: started
-  become: yes
+  become: true
   tags: ["mysql56"]

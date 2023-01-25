@@ -5,13 +5,13 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present system=yes
-      become: yes
+      become: true
     - name: Add application user group
       ansible.builtin.group: name={{ web_adt_application_user_group }} state=present system=yes
-      become: yes
+      become: true
     - name: Add application user
       ansible.builtin.user: create_home=yes group={{ web_adt_application_user_group }} home=/home/{{ web_adt_application_user }} name={{ web_adt_application_user }} shell=/bin/bash state=present system=yes
-      become: yes
+      become: true
   roles:
     - common
     - role: apache_httpd
@@ -48,5 +48,5 @@
         name: "{{ web_adt_application_name }}.service"
         scope: system
         state: restarted
-      become: yes
+      become: true
       tags: ["web_adt_application"]

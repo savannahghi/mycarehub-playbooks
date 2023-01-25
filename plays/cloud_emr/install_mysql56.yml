@@ -5,7 +5,7 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present system=yes
-      become: yes
+      become: true
   roles:
     - common
     - mysql56

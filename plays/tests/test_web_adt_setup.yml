@@ -5,17 +5,17 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
-      become: yes
+      become: true
     - name: Add application user group
       ansible.builtin.group: name={{ app_user_group }} state=present system=yes
-      become: yes
+      become: true
     - name: Add application user
       ansible.builtin.user: create_home=yes group={{ app_user_group }} home=/home/{{ app_user }} name={{ app_user }} shell=/bin/bash state=present system=yes
-      become: yes
+      become: true
   post_tasks:
     - name: Deploy successful, remove lock_file
       ansible.builtin.file: path={{ lock_file_path }} state=absent
-      become: yes
+      become: true
   roles:
     - common
     - role: apache_httpd

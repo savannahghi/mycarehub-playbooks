@@ -20,7 +20,7 @@
     repo: ppa:ondrej/php
     state: present
     update_cache: yes
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Install PHP 7.4 and other required dependencies
@@ -31,11 +31,11 @@
       - php7.4-mysql
       - php7.4-xml
     state: present
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Create WebADT database user
-  become: yes
+  become: true
   community.mysql.mysql_user:
     login_unix_socket: "{{ web_adt_db_socket_file_path }}"
     name: "{{ web_adt_db_user }}"
@@ -60,7 +60,7 @@
     force: no
     timeout: 10
     url: "{{ web_adt_dist_download_url }}"
-  become: yes
+  become: true
   register: web_adt_dist_download_data
   tags: ["web_adt"]
   
@@ -70,7 +70,7 @@
     keep_newer: no  # Overwrite everything
     remote_src: yes
     src: "{{ web_adt_dist_download_data.dest }}"
-  become: yes
+  become: true
   tags: ["web_adt"]
     
 - name: Unarchive WebADT application files
@@ -79,7 +79,7 @@
     keep_newer: no  # Overwrite everything
     remote_src: yes
     src: "{{ web_adt_preferred_temp_dir }}/2.Installer/resources/xampp.zip"
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Install WebADT distribution
@@ -91,7 +91,7 @@
     owner: "{{ web_adt_apache_httpd_server_user }}"
     remote_src: yes
     src: "{{ web_adt_preferred_temp_dir }}/xampp/htdocs/ADT"
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Overwrite hardcoded database login details
@@ -112,7 +112,7 @@
     - { match: "'password' => 'root'",           result: "        'password' => '{{ web_adt_db_user_password }}'," }
     - { match: "'port' => 3307",                 result: "        'port' => {{ web_adt_db_port }}," }
     - { match: "'username' => 'root'",           result: "        'username' => '{{ web_adt_db_user }}'," }
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Add WebADT specific server configuration
@@ -124,13 +124,13 @@
     group: "{{ web_adt_apache_httpd_server_user_group }}"
     owner: "{{ web_adt_apache_httpd_server_user }}"
     src: web_adt_httpd.conf
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Enable Apache rewrite module (mod_rewrite)
   ansible.builtin.command:
     cmd: a2enmod rewrite
-  become: yes
+  become: true
   tags: ["web_adt"]
 
 - name: Fresh installation setup
@@ -148,6 +148,6 @@
       loop:
         - "{{ web_adt_preferred_temp_dir }}/2.Installer/resources/database/testadt_v4_tables_only.sql"
         - "{{ web_adt_preferred_temp_dir }}/2.Installer/resources/database/testadt.sql"
-  become: yes
+  become: true
   tags: ["web_adt"]
   when: web_adt_is_fresh_install

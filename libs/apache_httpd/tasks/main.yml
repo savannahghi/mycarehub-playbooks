@@ -14,7 +14,7 @@
     name: apache2
     state: present
     update_cache: yes
-  become: yes
+  become: true
   tags: ["apache_httpd"]
 
 - name: Shutdown the default Apache HTTP service
@@ -24,7 +24,7 @@
     name: "{{ apache_httpd_default_apache_http_service_name }}"
     scope: system
     state: stopped
-  become: yes
+  become: true
   tags: ["apache_httpd"]
   when: apache_httpd_stop_default_apache_service
 
@@ -41,7 +41,7 @@
     - "{{ apache_httpd_config_extras }}"
     - "{{ apache_httpd_document_root }}"
     - "{{ apache_httpd_logs_root }}"
-  become: yes
+  become: true
   tags: ["apache_httpd"]
 
 - name: Configure the Apache HTTP server instance
@@ -56,7 +56,7 @@
   loop:
     - httpd.conf
     - ports.conf
-  become: yes
+  become: true
   tags: ["apache_httpd"]
 
 - name: Set up systemd service for the Apache HTTP server instance
@@ -65,5 +65,5 @@
     dest: "{{ apache_httpd_systemd_unit_file_load_path }}/{{ apache_httpd_instance_name }}.service"
     force: yes
     src: apache_httpd.service
-  become: yes
+  become: true
   tags: ["apache_httpd"]

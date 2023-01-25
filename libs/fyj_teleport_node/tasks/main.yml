@@ -18,12 +18,12 @@
     mode: "u=rw,g=rw,o=r"
     owner: root
     src: teleport.yaml
-  become: yes
+  become: true
   tags: ["fyj_teleport_node"]
 
 - name: Enable Teleport service
   ansible.builtin.systemd:
     enabled: yes
     name: teleport
-  become: yes
+  become: true
   tags: ["fyj_teleport_node"]

@@ -1,0 +1,9 @@
+---
+
+#-----------------------------------------------------------------------
+# Run this playbook to add nginx configuration files for cloud emr apps
+# ansible-playbook -i inventories/cloud_emr_servers -l "12867.cloud.fyj.org" plays/cloud_emr/nginx_conf_emr_apps.yml --vault-id=~/.vaultpass
+#-----------------------------------------------------------------------
+
+- import_playbook: nginx_conf_kenyaemr.yml
+- import_playbook: nginx_conf_webadt.yml

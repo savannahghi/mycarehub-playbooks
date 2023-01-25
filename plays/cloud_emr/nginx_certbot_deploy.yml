@@ -1,0 +1,17 @@
+---
+#--------------------------------------------------------------------
+#    - install nginx.
+#    - install certbot.
+#    - obtaining ssl certificate for *.app_name.cloud.fahariyajamii.org domain.
+#    - change letsencrypt_cert_domain_suffix value to generate cert for other domains.
+#    - remember to first create the required recordset for which you're obtaining the cert.
+#--------------------------------------------------------------------
+
+- hosts: cloud_emr_central_server
+  name: Configure nginx reverse proxy
+  roles:
+      - role: nginx
+      - role: certbot
+        certbot_email: "{{ certbot_email }}"
+      - role: letsencrypt_cert
+        certificate_domain: "{{ letsencrypt_cert_domain_suffix }}"

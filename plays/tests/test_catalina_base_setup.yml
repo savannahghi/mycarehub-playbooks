@@ -5,11 +5,11 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
-      become: yes
+      become: true
   post_tasks:
     - name: Deploy successful, remove lock_file
       ansible.builtin.file: path={{ lock_file_path }} state=absent
-      become: yes
+      become: true
   roles:
     - common
     - role: tomcat
@@ -30,7 +30,7 @@
         name: openjdk-8-jdk
         state: latest
         update_cache: yes
-      become: yes
+      become: true
       tags: ["test_tomcat_catalina_base"]
 
     - name: Add CATALINA_BASE user group 
@@ -38,7 +38,7 @@
         name: "{{ app_user_group }}"
         state: present
         system: yes
-      become: yes
+      become: true
       tags: ["test_tomcat_catalina_base"]
 
     - name: Add CATALINA_BASE user
@@ -51,7 +51,7 @@
         shell: /bin/bash
         state: present
         system: yes
-      become: yes
+      become: true
       tags: ["test_tomcat_catalina_base"]
 
     - name: Install and set up Apache Tomcat CATALINA_BASE dir

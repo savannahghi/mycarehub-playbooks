@@ -5,19 +5,19 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present system=yes
-      become: yes
+      become: true
     - name: Install JDK 8 and PyMySQL
       ansible.builtin.apt:
         name: [openjdk-8-jdk, python3-pymysql]
         state: latest
         update_cache: yes
-      become: yes
+      become: true
     - name: Add application user_group
       ansible.builtin.group: name={{ kenyaemr_application_user_group }} state=present system=yes
-      become: yes
+      become: true
     - name: Add application user
       ansible.builtin.user: create_home=yes group={{ kenyaemr_application_user_group }} home=/home/{{ kenyaemr_application_user }} name={{ kenyaemr_application_user }} shell=/bin/bash state=present system=yes
-      become: yes
+      become: true
   roles:
     - common
     - role: tomcat
@@ -68,5 +68,5 @@
         name: "{{ kenyaemr_application_name }}.service"
         scope: system
         state: restarted
-      become: yes
+      become: true
       tags: ["kenyaemr_application"]

@@ -1,3 +1,5 @@
+central_server ansible_host=cloudemr-poc
+
 [kenyaemr_servers]
 12867.cloud.fyj.org
 13052.cloud.fyj.org

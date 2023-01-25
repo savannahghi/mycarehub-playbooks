@@ -16,4 +16,4 @@
         loop:
             - /tmp/airflow-teleport
             - /tmp/airflow-teleport-cert.pub
-        become: yes
+        become: true

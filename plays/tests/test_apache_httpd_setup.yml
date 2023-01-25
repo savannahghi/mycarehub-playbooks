@@ -5,11 +5,11 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
-      become: yes
+      become: true
   post_tasks:
     - name: Deploy successful, remove lock_file
       ansible.builtin.file: path={{ lock_file_path }} state=absent
-      become: yes
+      become: true
   roles:
     - common
   strategy: free
@@ -26,7 +26,7 @@
         name: "{{ app_user_group }}"
         state: present
         system: yes
-      become: yes
+      become: true
       tags: ["test_apache_httpd_setup"]
 
     - name: Add apache server user
@@ -39,7 +39,7 @@
         shell: /bin/bash
         state: present
         system: yes
-      become: yes
+      become: true
       tags: ["test_apache_httpd_setup"]
 
     - name: Install and set up Apache HTTP server

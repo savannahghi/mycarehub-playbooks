@@ -20,7 +20,7 @@
     owner: "{{ catalina_base_owning_user }}"
     path: "{{ item }}"
     state: directory
-  become: yes
+  become: true
   loop:
     - "{{ catalina_base_root_dir }}"
     - "{{ catalina_base_root_dir }}/bin"
@@ -41,7 +41,7 @@
     patterns:
       - "*"
     use_regex: no
-  become: yes
+  become: true
   register: default_tomcat_config_files
   tags: ["tomcat_catalina_base"]
 
@@ -54,7 +54,7 @@
     owner: "{{ catalina_base_owning_group }}"
     remote_src: yes
     src: "{{ item.path }}"
-  become: yes
+  become: true
   loop: "{{ default_tomcat_config_files.files }}"
   tags: ["tomcat_catalina_base"]
 
@@ -67,7 +67,7 @@
     mode: "ug=rw,o=r"
     owner: "{{ catalina_base_owning_user }}"
     src: server.xml
-  become: yes
+  become: true
   tags: ["tomcat_catalina_base"]
 
 - name: Override the default binary files with those specific to this setup
@@ -79,7 +79,7 @@
     mode: "ug=rwx,o=r"
     owner: "{{ catalina_base_owning_user }}"
     src: "{{ item }}"
-  become: yes
+  become: true
   loop:
     - setenv.sh
     - shutdown.sh
@@ -92,5 +92,5 @@
     dest: "{{ catalina_base_systemd_unit_file_load_path }}/{{ catalina_base_service_name }}.service"
     force: yes
     src: tomcat.service
-  become: yes
+  become: true
   tags: ["tomcat_catalina_base"]

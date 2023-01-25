@@ -1,0 +1,56 @@
+---
+
+#------------------------------------------------------------------------------
+#    - Run this against the central_server to add nginx config for webADT app
+#    - ansible-playbook -i inventories/cloud_emr_servers -l "12867.cloud.fyj.org" plays/cloud_emr/nginx_conf_webadt.yml --vault-id=~/.vaultpass
+#------------------------------------------------------------------------------
+
+- hosts: kenyaemr_servers
+  name: Add webADT application's nginx configuration files
+  tasks:
+    - name: Create adt application directories for sites
+      delegate_to: central_server
+      ansible.builtin.file:
+        path: "{{ item}}"
+        state: directory
+        mode: u=rwx,g=rx,o=rx
+      loop:
+        - "/etc/nginx/sites-available/{{ nginx_site_app_name }}"
+        - "/etc/nginx/sites-enabled/{{ nginx_site_app_name }}"
+      become: true
+      tags: ["webadt_nginx_site"]
+
+    - name: Add webADT nginx configuration file
+      delegate_to: central_server
+      import_role:
+        name: nginx_site
+      vars:
+        nginx_site_app_name: web_adt
+        nginx_site_filename: "{{ nginx_site_app_name }}/{{ nginx_site_facility_mfl_code }}_{{ nginx_site_app_name }}.conf"
+        nginx_site_server_name: "{{ nginx_site_facility_mfl_code }}.{{ nginx_site_webadt_subdomain }}"
+        nginx_site_server_port: 80
+        nginx_site_server_ssl_on: true
+        nginx_site_server_ssl_port: 443
+        nginx_site_server_ssl_cert: "/etc/letsencrypt/live/{{ nginx_site_webadt_subdomain }}/fullchain.pem"
+        nginx_site_server_ssl_key: "/etc/letsencrypt/live/{{ nginx_site_webadt_subdomain }}/privkey.pem"
+        nginx_site_extra: ""
+        nginx_site_validate_certs: true
+        nginx_site_server_url: "http://{{ nginx_site_server_name }}"
+        nginx_site_confirm_string: ""
+        nginx_site_http2_enabled: false
+        nginx_site_server_block_extra: |
+          location / {
+              rewrite ^/$ /ADT/public/ break;
+              proxy_pass http://{{ nginx_site_server_address }}:{{ nginx_site_webadt_port }};
+              proxy_http_version 1.1;
+              proxy_intercept_errors on;
+              proxy_set_header Connection close;
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_redirect default;
+          }
+      tags: ["webadt_nginx_site"]
+
+

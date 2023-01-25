@@ -6,7 +6,7 @@
     owner: "{{ tomcat_owning_user }}"
     path: "{{ tomcat_installation_dir }}"
     state: directory 
-  become: yes
+  become: true
   tags: ["tomcat"]
 
 - name: Download Apache Tomcat
@@ -15,7 +15,7 @@
     force: yes
     timeout: 10
     url: "{{ tomcat_download_url }}" 
-  become: yes
+  become: true
   tags: ["tomcat"]
 
 - name: Unarchive and install Apache Tomcat
@@ -29,7 +29,7 @@
     owner: "{{ tomcat_owning_user }}"
     remote_src: yes
     src: "{{ tomcat_temp_download_dir }}/apache_tomcat.tar.gz"
-  become: yes
+  become: true
   tags: ["tomcat"]
 
 - name: Make essential CATALINA_HOME directories readable to all users
@@ -37,7 +37,7 @@
     mode: "u=rwx,go=rx"
     path: "{{ item }}"
     state: directory
-  become: yes
+  become: true
   loop:
     - "{{ tomcat_installation_dir }}/bin"
     - "{{ tomcat_installation_dir }}/conf"
@@ -55,7 +55,7 @@
     patterns:
       - "*"
     use_regex: no
-  become: yes
+  become: true
   register: catalina_home_binaries
   tags: ["tomcat"]
 
@@ -64,7 +64,7 @@
     mode: "u=rwx,go=rx"
     path: "{{ item.path }}"
     state: file
-  become: yes
+  become: true
   loop: "{{ catalina_home_binaries.files }}"
   tags: ["tomcat"]
 
@@ -77,7 +77,7 @@
     patterns:
       - "*"
     use_regex: no
-  become: yes
+  become: true
   register: catalina_home_libraries
   tags: ["tomcat"]
 
@@ -86,6 +86,6 @@
     mode: "u=rw,go=r"
     path: "{{ item.path }}"
     state: file
-  become: yes
+  become: true
   loop: "{{ catalina_home_libraries.files }}"
   tags: ["tomcat"]

@@ -47,14 +47,14 @@
             owner: "root"
             group: "root"
             mode: "u=rw,g=rw,o=r"
-        become: yes
+        become: true
         tags: ["teleport_node"]
 
       - name: "Enable Teleport service"
         systemd:
             name: teleport
             enabled: yes
-        become: yes
+        become: true
         tags: ["teleport_node"]
 
       # If you're redeploying new Teleport settings to a server with
@@ -65,5 +65,5 @@
         systemd:
             name: teleport
             state: restarted
-        become: yes
+        become: true
         tags: ["teleport_node"]

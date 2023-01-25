@@ -28,5 +28,5 @@
         mode: "u=rw,g=rw,o=r"
         owner: root
         src: "teleport.service"
-  become: yes
+  become: true
   tags: ["teleport"]

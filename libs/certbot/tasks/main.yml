@@ -4,34 +4,34 @@
   ansible.builtin.apt:
       name: certbot
       state: absent
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 - name: Install snapd if not present
   ansible.builtin.apt:
       name: snapd
       state: present
       update_cache: yes
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 - name: Install snap core
   ansible.builtin.shell:
       cmd: "snap install core"
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 - name: Update snapd
   ansible.builtin.shell:
       cmd: "snap refresh core"
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 - name: Install certbot
   ansible.builtin.shell:
       cmd: "snap install --classic certbot"
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 - name: Prepare certbot command
   ansible.builtin.file:
@@ -40,13 +40,13 @@
       state: link
       owner: "root"
       group: "root"
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 
 
 - name: Install certbot-dns-google to allow for wildcard domain certs.
   ansible.builtin.shell:
       cmd: "snap install certbot-dns-google"
-  become: yes
-  tags: ["letsencrypt"]
+  become: true
+  tags: ["certbot"]
 

@@ -1,0 +1,6 @@
+---
+
+deploy_user: "{{ vault_deploy_user }}"
+nginx_site_kenyaemr_subdomain: "{{ vault_nginx_site_kenyaemr_subdomain }}"
+nginx_site_webadt_subdomain: "{{ vault_nginx_site_webadt_subdomain }}"
+

@@ -21,11 +21,11 @@
     owner: "{{ openmrs_servlet_container_user }}"
     timeout: 10
     url: "{{ openmrs_platform_war_file_download_url }}"
-  become: yes
+  become: true
   tags: ["openmrs"]
 
 - name: Create OpenMRS database user
-  become: yes
+  become: true
   community.mysql.mysql_user:
     login_unix_socket: "{{ openmrs_db_socket_file_path }}"
     name: "{{ openmrs_db_user }}"
@@ -51,7 +51,7 @@
     owner: "{{ openmrs_servlet_container_user }}"
     path: "{{ item }}"
     state: directory
-  become: yes
+  become: true
   loop:
     - "{{ openmrs_data_dir }}"
     - "{{ openmrs_data_dir }}/modules"
@@ -66,5 +66,5 @@
     group: "{{ openmrs_servlet_container_user_group }}"
     owner: "{{ openmrs_servlet_container_user }}"
     src: "openmrs-runtime.properties"
-  become: yes
+  become: true
   tags: ["openmrs"]

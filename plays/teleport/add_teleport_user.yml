@@ -43,7 +43,7 @@
           vars:
             sudoer: "{{ username }}"
           when: as_admin
-      become: yes
+      become: true
       tags: ["teleport_user"]
 
     - name: Ensure user is added on Teleport
@@ -58,5 +58,5 @@
           ansible.builtin.shell: "tctl users add {{ username }} --logins={{ username }} --roles={{ user_role }} --ttl=12h"
           delegate_to: "{{ item }}"
           loop: "{{ target_hosts.split(',') if target_hosts is defined else [inventory_hostname] }}"
-      become: yes
+      become: true
       tags: ["teleport_user"]

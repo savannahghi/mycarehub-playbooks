@@ -5,11 +5,11 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
-      become: yes
+      become: true
   post_tasks:
     - name: Deploy successful, remove lock_file
       ansible.builtin.file: path={{ lock_file_path }} state=absent
-      become: yes
+      become: true
   roles:
     - common
     - sudoers
@@ -34,12 +34,12 @@
       ansible.builtin.file:
         path: "{{ teleport_config_path }}"
         state: absent
-      become: yes
+      become: true
       tags: ["teleport_master"]
 
     - name: Configure Teleport server
       ansible.builtin.shell: "teleport configure --acme --acme-email={{ teleport_master_admin_email }} --cluster-name={{ teleport_master_domain }} --output={{ teleport_config_path }}"
-      become: yes
+      become: true
       tags: ["teleport_master"]
 
     - name: Enable the Teleport service
@@ -48,7 +48,7 @@
           daemon_reload: yes
           enabled: yes
           state: restarted
-      become: yes
+      become: true
       tags: ["teleport_master"]
 
     - name: Verify Teleport service is up

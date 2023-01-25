@@ -5,5 +5,5 @@
     enabled: true
     name: mysql
     stated: restarted
-  become: yes
+  become: true
   tags: ["mysql56"]

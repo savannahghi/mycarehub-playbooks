@@ -5,20 +5,20 @@
   pre_tasks:
     - name: Create deploy user
       ansible.builtin.user: name={{ deploy_user }} groups=www-data,sudo state=present
-      become: yes
+      become: true
     - name: Install JDK 8
       ansible.builtin.apt: name=openjdk-8-jdk state=latest update_cache=yes
-      become: yes
+      become: true
     - name: Add CATALINA_BASE user_group
       ansible.builtin.group: name={{ app_user_group }} state=present system=yes
-      become: yes
+      become: true
     - name: Add CATALINA_BASE user
       ansible.builtin.user: create_home=yes group={{ app_user_group }} home=/home/{{ app_user }} name={{ app_user }} shell=/bin/bash state=present system=yes
-      become: yes
+      become: true
   post_tasks:
     - name: Deploy successful, remove lock_file
       ansible.builtin.file: path={{ lock_file_path }} state=absent
-      become: yes
+      become: true
   roles:
     - common
     - role: tomcat
@@ -51,7 +51,7 @@
         name: python3-pymysql
         state: present
         update_cache: yes
-      become: yes
+      become: true
       tags: ["test_openmrs"]
 
     - name: Install and set up OpenMRS Platform war

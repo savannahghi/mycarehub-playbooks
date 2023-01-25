@@ -13,7 +13,7 @@
         repo: "{{ python_ppa_url }}"
         state: present
         update_cache: yes
-  become: yes
+  become: true
   tags: ["python"]
 
 - name: Install Python versions and their base packages
@@ -25,13 +25,13 @@
       - python3-pip
     state: present
     update_cache: yes
-  become: yes
+  become: true
   loop: "{{ python_versions_to_install }}"
   tags: ["python"]
 
 - name: Fix Python3.10 Pip
   ansible.builtin.shell: apt install -y python3.10-distutils && curl -Ss https://bootstrap.pypa.io/get-pip.py | python3.10
-  become: yes
+  become: true
   when: "'3.10' in python_versions_to_install"
   tags: ["python"]
 
@@ -41,5 +41,5 @@
       - pip
       - virtualenv
     state: latest
-  become: yes
+  become: true
   tags: ["python"]

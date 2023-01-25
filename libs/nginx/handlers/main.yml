@@ -2,10 +2,10 @@
 
 - name: restart nginx
   ansible.builtin.service: name=nginx state=restarted
-  become: yes
+  become: true
   tags: ["nginx"]
 
 - name: confirm nginx config
   command: nginx -t
-  become: yes
+  become: true
   tags: ["nginx"]

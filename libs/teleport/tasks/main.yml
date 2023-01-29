@@ -20,13 +20,28 @@
       ansible.builtin.apt:
         name: teleport
         state: latest
+    
+    - name: Ensure Teleport config directory exists
+      ansible.builtin.file:
+        group: root
+        owner: root
+        path: "{{ teleport_config_file_dir }}"
+        state: directory
+
+    - name: Configure Teleport
+      ansible.builtin.template:
+        dest: "{{ teleport_config_file_dir }}/teleport.yaml"
+        group: root
+        mode: "u=rw,go=r"
+        owner: root
+        src: teleport_config.yaml
 
     - name: Setup systemd service for Teleport
       ansible.builtin.template:
-        dest: "/etc/systemd/system/teleport.service"
+        dest: /etc/systemd/system/teleport.service
         group: root
-        mode: "u=rw,g=rw,o=r"
+        mode: "u=rw,go=r"
         owner: root
-        src: "teleport.service"
+        src: teleport.service
   become: true
   tags: ["teleport"]

@@ -1,0 +1,115 @@
+# By default, this file should be stored in /etc/teleport.yaml
+
+# Configuration file version. The current version is "v3".
+version: {{ teleport_config_file_version }}
+
+# This section of the configuration file applies to all teleport
+# services.
+teleport:
+    {% if teleport_node_name %}
+    # nodename allows one to assign an alternative name this node can be
+    # reached by. By default it's equal to hostname.
+    nodename: {{ teleport_node_name }}
+    {% endif -%}
+
+    # Data directory where Teleport daemon keeps its data.
+    # See "Storage backends" for more details
+    # (https://goteleport.com/docs/setup/reference/backends/).
+    data_dir: {{ teleport_data_dir }}
+
+    # PID file for Teleport process
+    pid_file: {{ teleport_pid_file }}
+
+    {% if teleport_auth_token %}
+    # The invitation token or an absolute path to a file containing the token used
+    # to join a cluster. It is not used on subsequent starts.
+    # If using a file, it only needs to exist when teleport is first ran.
+    #
+    # File path example:
+    # auth_token: /var/lib/teleport/tokenjoin
+    #
+    # This is the same as setting join_params.method to "token", and join_params.token_name
+    # to the value of auth_token.
+    # You should only use either auth_token or join_params.
+    auth_token: xxxx-token-xxxx
+    {% endif -%}
+
+    {% if teleport_ca_pin %}
+    # Optional CA pin of the auth server. This enables a more secure way of
+    # adding new nodes to a cluster. See "Adding Nodes to your Cluster"
+    # (https://goteleport.com/docs/setup/admin/adding-nodes).
+    ca_pin: {{ teleport_ca_pin }}
+    {% endif -%}
+
+    {% if teleport_proxy_server %}
+    # Proxy Server address and port to connect to. If you enable the Teleport
+    # Proxy Server to run in High Availability configuration, the address should
+    # point to a Load Balancer.
+    proxy_server: teleport-proxy.example.com:443
+    {% endif -%}
+
+    # The cache is enabled by default, it can be disabled with this flag
+    cache:
+        enabled: {{ teleport_cache_enabled }}
+
+    # Teleport throttles all connections to avoid abuse. These settings allow
+    # you to adjust the default limits
+    connection_limits:
+        max_connections: 1000
+        max_users: 250
+
+    # Logging configuration. Possible output values to disk via
+    # '/var/lib/teleport/teleport.log',
+    # 'stdout', 'stderr' and 'syslog'. Possible severity values are DEBUG, INFO (default), WARN,
+    # and ERROR.
+    log:
+        output: {{ teleport_log_output }}
+        severity: {{ teleport_log_severity }}
+
+        # Log format configuration
+        # Possible output values are 'json' and 'text' (default).
+        # Possible extra_fields values include: timestamp, component, caller,
+        # and level.
+        # All extra fields are included by default.
+        format:
+          output: text
+          extra_fields: [level, timestamp, component, caller]
+
+    {{ teleport_config_main_section_extra }}
+
+# This section configures the 'application service'
+app_service:
+    {{ teleport_config_app_service_section }}
+
+# This section configures the 'auth service':
+auth_service:
+    {{ teleport_config_auth_service_section }}
+
+# This section configures the 'database service'.
+db_service:
+    {{ teleport_config_db_service_section }}
+
+# This section configures the 'discovery service'
+discovery_service:
+    {{ teleport_config_discovery_service_section }}
+
+# This section configures the 'kubernetes service'
+kubernetes_service:
+    {{ teleport_config_kubernetes_service_section }}
+
+# This section configures the 'proxy service'
+proxy_service:
+    {{ teleport_config_proxy_service_section }}
+
+# This section configures the 'node service':
+ssh_service:
+    {{ teleport_config_ssh_service_section }}
+
+# This section configures the 'windows desktop service'
+windows_desktop_service:
+    {{ teleport_config_windows_desktop_service_section }}
+
+{%- if teleport_config_extra %}
+# Extra configuration.
+{{ teleport_config_extra }}
+{% endif -%}

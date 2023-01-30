@@ -7,7 +7,7 @@
 #    - remember to first create the required recordset for which you're obtaining the cert.
 #--------------------------------------------------------------------
 
-- hosts: cloud_emr_central_server
+- hosts: central_server
   name: Configure nginx reverse proxy
   roles:
       - role: nginx

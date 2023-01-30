@@ -1,12 +1,22 @@
-central_server ansible_host=cloudemr-poc
+central_server.cloud.fyj.org
 
 [kenyaemr_servers]
+test1.cloud.fyj.org
 12867.cloud.fyj.org
 13052.cloud.fyj.org
 14200.cloud.fyj.org
 15560.cloud.fyj.org
 
 [web_adt_servers]
+test1.cloud.fyj.org
+12867.cloud.fyj.org
+13052.cloud.fyj.org
+14200.cloud.fyj.org
+15560.cloud.fyj.org
+test1.cloud.fyj.org
+
+[idr_client_servers]
+test1.cloud.fyj.org
 12867.cloud.fyj.org
 13052.cloud.fyj.org
 14200.cloud.fyj.org
@@ -15,3 +25,6 @@ central_server ansible_host=cloudemr-poc
 [cloud_emr_servers:children]
 kenyaemr_servers
 web_adt_servers
+idr_client_servers
+
+

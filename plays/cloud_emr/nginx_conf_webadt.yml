@@ -1,7 +1,7 @@
 ---
 
 #------------------------------------------------------------------------------
-#    - Run this against the central_server to add nginx config for webADT app
+#    - Run this against the central_server.cloud.fyj.org to add nginx config for webADT app
 #    - ansible-playbook -i inventories/cloud_emr_servers -l "12867.cloud.fyj.org" plays/cloud_emr/nginx_conf_webadt.yml --vault-id=~/.vaultpass
 #------------------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
   name: Add webADT application's nginx configuration files
   tasks:
     - name: Create adt application directories for sites
-      delegate_to: central_server
+      delegate_to: central_server.cloud.fyj.org
       ansible.builtin.file:
         path: "{{ item}}"
         state: directory
@@ -21,7 +21,7 @@
       tags: ["webadt_nginx_site"]
 
     - name: Add webADT nginx configuration file
-      delegate_to: central_server
+      delegate_to: central_server.cloud.fyj.org
       import_role:
         name: nginx_site
       vars:

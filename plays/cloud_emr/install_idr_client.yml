@@ -1,0 +1,61 @@
+---
+
+- name: Install and set up IDR client application
+  hosts: idr_client_servers
+  become: yes
+  pre_tasks:
+    - name: Add application user group.
+      ansible.builtin.group:
+        name: "{{ idr_client_user_group }}"
+        state: present
+        system: yes
+      become: yes
+
+    - name: Add application user.
+      ansible.builtin.user:
+        comment: Custom user for running idr related tasks.
+        group: "{{ idr_client_user_group }}"
+        name: "{{ idr_client_user }}"
+        password: "{{ idr_client_user_pwd | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+        system: yes
+        update_password: always
+      become: yes
+  roles:
+    - common
+    - idr_client
+  strategy: free
+  vars:
+    idr_client_config_dir: "{{ idr_client_app_config_dir }}"
+    idr_client_desktop_entry_installation_dir: "{{ idr_client_app_desktop_entry_installation_dir }}"
+    idr_client_download_url: "{{ idr_client_app_download_url }}"
+    idr_client_icon_installation_dir: "{{ idr_client_app_icon_installation_dir }}"
+    idr_client_installation_dir: "{{ idr_client_app_installation_dir }}"
+    idr_client_logs_dir: "{{ idr_client_app_logs_dir }}"
+    idr_client_force_app_download: "{{ idr_client_app_force_app_download }}"
+
+    # app user details
+    idr_client_user: "{{ idr_client_app_user }}"
+    idr_client_user_group: "{{ idr_client_app_user_group }}"
+    idr_client_user_pwd: "{{ idr_client_app_user_pwd }}"
+
+    # idr server url and credentials
+    idr_client_server_password: "{{ idr_client_app_server_password }}"
+    idr_client_server_url: "{{ idr_client_app_server_url }}"
+    idr_client_server_username: "{{ idr_client_app_server_username }}"
+
+    # host mysql_db credentials
+    idr_client_host_mysql_address: "{{ idr_client_app_host_mysql_address }}"
+    idr_client_host_mysql_port: "{{ idr_client_app_host_mysql_port }}"
+    
+    idr_client_host_mysql_password: "{{ kenyaemr_application_database_user_password }}"
+    idr_client_host_mysql_username: "{{ kenyaemr_application_database_user }}"
+
+    # facility details
+    idr_client_facility_name: "{{ nginx_site_facility_name }}"
+    idr_client_facility_mfl_code: "{{ nginx_site_facility_mfl_code }}"
+  
+  tags: ["idr_client_deploy"]
+
+

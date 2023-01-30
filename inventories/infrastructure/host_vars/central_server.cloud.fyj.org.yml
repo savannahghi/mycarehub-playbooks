@@ -1,0 +1,6 @@
+---
+
+teleport_node_name: central_server.cloud.fyj.org
+teleport_ssh_node_env: prod
+teleport_ssh_node_provider: GCP
+teleport_ssh_node_region: Belgium

@@ -1,3 +1,0 @@
-[teleport_master_servers]
-teleport_master_prod ansible_host=teleport_prod
-teleport_master_test ansible_host=teleport_test

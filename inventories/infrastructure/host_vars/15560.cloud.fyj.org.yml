@@ -1,0 +1,6 @@
+---
+
+teleport_ssh_extra_static_label: "facility_name: Shompole Dispensary"
+teleport_ssh_node_env: prod
+teleport_ssh_node_provider: GCP
+teleport_ssh_node_region: Belgium

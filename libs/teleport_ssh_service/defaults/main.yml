@@ -1,0 +1,51 @@
+---
+
+# The invitation token or an absolute path to a file containing the token used
+# to join a cluster. It is not used on subsequent starts.
+# If using a file, it only needs to exist when teleport is first ran.
+#
+# This value is required.
+teleport_ssh_auth_token: ""
+
+# Optional CA pin of the auth server. This enables a more secure way of
+# adding new nodes to a cluster. See "Adding Nodes to your Cluster"
+# (https://goteleport.com/docs/setup/admin/adding-nodes).
+#
+# This value is required.
+teleport_ssh_ca_pin: ""
+
+# An extra dynamic label to add on the Teleport SSH Node.
+#
+# This must be a valid `key: value` Yaml entry.
+teleport_ssh_extra_dynamic_label: ""
+
+# An extra static label to add on the Teleport SSH Node.
+#
+# This must be a valid `key: value` Yaml entry.
+teleport_ssh_extra_static_label: ""
+
+# The environment that this nodes belongs to. e.g prod, test, play, etc.
+#
+# This value is required.
+teleport_ssh_node_env: ""
+
+# This describes where the node is hosted, GCP for nodes running on Google
+# Cloud Compute, HETZNER for nodes running on Hetzner and EDGE for on-premise
+# nodes.
+#
+# This value is required.
+teleport_ssh_node_provider: ""
+
+# The physical location of node. For servers in GCP or Hetzner, this will be
+# the region of the server. For edge servers, it will be the actual location
+# of the server, e.g Loitoktok
+#
+# This value is required.
+teleport_ssh_node_region: ""
+
+# Proxy Server address and port to connect to. If you enable the Teleport
+# Proxy Server to run in High Availability configuration, the address should
+# point to a Load Balancer.
+#
+# This value is required.
+teleport_ssh_proxy_server: ""

@@ -25,29 +25,29 @@ teleport_data_dir: /var/lib/teleport
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_app_service_section: |
-  enabled: no
+teleport_config_app_service_section: |4
+        enabled: no
 
 # Configure the 'auth service'.
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_auth_service_section: |
-  enabled: no
+teleport_config_auth_service_section: |4
+        enabled: no
 
 # Configure the 'db service'.
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_db_service_section: |
-  enabled: no
+teleport_config_db_service_section: |4
+        enabled: no
 
 # Configure the 'discovery service'.
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_discovery_service_section: |
-  enabled: no
+teleport_config_discovery_service_section: |4
+        enabled: no
 
 # Extra configuration to add at the end of the configuration file.
 #
@@ -64,8 +64,8 @@ teleport_config_file_version: v3
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_kubernetes_service_section: |
-  enabled: no
+teleport_config_kubernetes_service_section: |4
+        enabled: no
 
 # The contents of this MUST be valid yaml.
 teleport_config_main_section_extra: ""
@@ -74,22 +74,26 @@ teleport_config_main_section_extra: ""
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_proxy_service_section: |
-  enabled: no
+teleport_config_proxy_service_section: |4
+        enabled: no
 
 # Configure the 'ssh service'.
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_ssh_service_section: |
-  enabled: no
+teleport_config_ssh_service_section: |4
+        enabled: no
 
 # Configure the 'windows desktop service'.
 #
 # The contents must be valid yaml and should be padded with the correct number
 # of white spaces to form a valid Teleport configuration.
-teleport_config_windows_desktop_service_section: |
-  enabled: no
+teleport_config_windows_desktop_service_section: |4
+        enabled: no
+
+# When set to true, the Teleport configuration at the host will be overwritten
+# with the new configuration if contents are different. 
+teleport_force_config_overwrite: no
 
 # Logging configuration. Possible output values to disk via
 # '/var/lib/teleport/teleport.log',

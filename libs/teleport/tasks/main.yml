@@ -2,9 +2,9 @@
 
 - name: Install and configure Teleport service
   block:
-    - name: "Download Teleport's PGP public key"
+    - name: Download Teleport's PGP public key
       ansible.builtin.get_url:
-        dest: "/usr/share/keyrings/teleport-archive-keyring.asc"
+        dest: /usr/share/keyrings/teleport-archive-keyring.asc
         force: yes
         group: root
         owner: root
@@ -31,6 +31,7 @@
     - name: Configure Teleport
       ansible.builtin.template:
         dest: "{{ teleport_config_file_dir }}/teleport.yaml"
+        force: "{{ teleport_force_config_overwrite }}"
         group: root
         mode: "u=rw,go=r"
         owner: root

@@ -31,7 +31,7 @@ teleport:
     # This is the same as setting join_params.method to "token", and join_params.token_name
     # to the value of auth_token.
     # You should only use either auth_token or join_params.
-    auth_token: xxxx-token-xxxx
+    auth_token: {{ teleport_auth_token }}
     {% endif -%}
 
     {% if teleport_ca_pin %}
@@ -45,7 +45,7 @@ teleport:
     # Proxy Server address and port to connect to. If you enable the Teleport
     # Proxy Server to run in High Availability configuration, the address should
     # point to a Load Balancer.
-    proxy_server: teleport-proxy.example.com:443
+    proxy_server: {{ teleport_proxy_server }}
     {% endif -%}
 
     # The cache is enabled by default, it can be disabled with this flag
@@ -79,35 +79,35 @@ teleport:
 
 # This section configures the 'application service'
 app_service:
-    {{ teleport_config_app_service_section }}
+{{ teleport_config_app_service_section }}
 
 # This section configures the 'auth service':
 auth_service:
-    {{ teleport_config_auth_service_section }}
+{{ teleport_config_auth_service_section }}
 
 # This section configures the 'database service'.
 db_service:
-    {{ teleport_config_db_service_section }}
+{{ teleport_config_db_service_section }}
 
 # This section configures the 'discovery service'
 discovery_service:
-    {{ teleport_config_discovery_service_section }}
+{{ teleport_config_discovery_service_section }}
 
 # This section configures the 'kubernetes service'
 kubernetes_service:
-    {{ teleport_config_kubernetes_service_section }}
+{{ teleport_config_kubernetes_service_section }}
 
 # This section configures the 'proxy service'
 proxy_service:
-    {{ teleport_config_proxy_service_section }}
+{{ teleport_config_proxy_service_section }}
 
 # This section configures the 'node service':
 ssh_service:
-    {{ teleport_config_ssh_service_section }}
+{{ teleport_config_ssh_service_section }}
 
 # This section configures the 'windows desktop service'
 windows_desktop_service:
-    {{ teleport_config_windows_desktop_service_section }}
+{{ teleport_config_windows_desktop_service_section }}
 
 {%- if teleport_config_extra %}
 # Extra configuration.

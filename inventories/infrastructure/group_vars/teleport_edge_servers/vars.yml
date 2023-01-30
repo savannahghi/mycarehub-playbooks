@@ -1,0 +1,5 @@
+---
+
+teleport_ssh_auth_token: "{{ vault_teleport_ssh_auth_token }}"
+teleport_ssh_ca_pin: "{{ vault_teleport_ssh_ca_pin }}"
+teleport_ssh_proxy_server: "{{ vault_teleport_ssh_proxy_server }}"

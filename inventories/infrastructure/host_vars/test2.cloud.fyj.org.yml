@@ -1,0 +1,6 @@
+---
+
+teleport_ssh_extra_static_label: "facility_name: test_facility2"
+teleport_ssh_node_env: test
+teleport_ssh_node_provider: GCP
+teleport_ssh_node_region: Belgium

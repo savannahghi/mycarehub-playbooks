@@ -1,4 +1,4 @@
-Install and Configure Teleport on an Ubuntu host
+Install and Configure Teleport on an Ubuntu Host
 ================================================
 
 This role installs `Teleport <teleport_docs_>`_ and provides variables to override specific parts of the `configuration <teleport_config_reference_>`_ to suite the installation context.

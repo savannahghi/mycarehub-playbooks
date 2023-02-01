@@ -43,6 +43,11 @@
   become: true
   tags: ["certbot"]
 
+- name: Trust certbot plugin.
+  ansible.builtin.shell:
+      cmd: "snap set certbot trust-plugin-with-root=ok"
+  become: true
+  tags: ["certbot"]
 
 - name: Install certbot-dns-google to allow for wildcard domain certs.
   ansible.builtin.shell:

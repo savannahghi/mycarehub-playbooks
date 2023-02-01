@@ -9,7 +9,7 @@ apache_httpd_include_default_server_modules: true
 apache_httpd_instance_name: apache_httpd
 
 # The address and/or port that the server instance will listen on.
-apache_httpd_listen_address: "0.0.0.0:9090"
+apache_httpd_listen_address: "0.0.0.0:8080"
 
 # Valid value are listed here: https://httpd.apache.org/docs/2.4/mod/core.html#loglevel
 apache_httpd_log_level: info
@@ -32,7 +32,7 @@ apache_httpd_server_root: /home/{{ apache_httpd_server_user }}/apache_httpd
 
 # The url to the server's mod_status status page.  If the mod is not enabled
 # or present, then status or fullstatus will not work.
-apache_httpd_status_url: http://localhost:9090/server-status
+apache_httpd_status_url: http://localhost:8080/server-status
 
 # The user and user group that runs the target Apache HTTP server instance.
 # This user or group should have read and write permissions to the directories

@@ -10,24 +10,23 @@
   tasks:
 
     - name: Create emr application directories for sites
-      delegate_to: central_server.cloud.fyj.org
+      delegate_to: central_server
       ansible.builtin.file:
         path: "{{ item}}"
         state: directory
         mode: u=rwx,g=rx,o=rx
       loop:
-        - "/etc/nginx/sites-available/{{ nginx_site_app_name }}"
-        - "/etc/nginx/sites-enabled/{{ nginx_site_app_name }}"
+        - "/etc/nginx/sites-available/{{ kenyaemr_application_name }}"
+        - "/etc/nginx/sites-enabled/{{ kenyaemr_application_name }}"
       become: true
       tags: ["kenyaemr_nginx_site"]
 
     - name: Add kenyaEMR nginx configuration file
-      delegate_to: central_server.cloud.fyj.org
+      delegate_to: central_server
       import_role:
         name: nginx_site
       vars:
-        nginx_site_app_name: kenya_emr
-        nginx_site_filename: "{{ nginx_site_app_name }}/{{ nginx_site_facility_mfl_code }}_{{ nginx_site_app_name }}.conf"
+        nginx_site_filename: "{{ kenyaemr_application_name }}/{{ nginx_site_facility_mfl_code }}_{{ kenyaemr_application_name }}.conf"
         nginx_site_server_name: "{{ nginx_site_facility_mfl_code }}.{{ nginx_site_kenyaemr_subdomain }}"
         nginx_site_server_port: 80
         nginx_site_server_ssl_on: true

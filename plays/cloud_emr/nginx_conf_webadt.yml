@@ -5,28 +5,27 @@
 #    - ansible-playbook -i inventories/cloud_emr_servers -l "12867.cloud.fyj.org" plays/cloud_emr/nginx_conf_webadt.yml --vault-id=~/.vaultpass
 #------------------------------------------------------------------------------
 
-- hosts: kenyaemr_servers
+- hosts: web_adt_servers
   name: Add webADT application's nginx configuration files
   tasks:
     - name: Create adt application directories for sites
-      delegate_to: central_server.cloud.fyj.org
+      delegate_to: central_server
       ansible.builtin.file:
         path: "{{ item}}"
         state: directory
         mode: u=rwx,g=rx,o=rx
       loop:
-        - "/etc/nginx/sites-available/{{ nginx_site_app_name }}"
-        - "/etc/nginx/sites-enabled/{{ nginx_site_app_name }}"
+        - "/etc/nginx/sites-available/{{ web_adt_application_name }}"
+        - "/etc/nginx/sites-enabled/{{ web_adt_application_name }}"
       become: true
       tags: ["webadt_nginx_site"]
 
     - name: Add webADT nginx configuration file
-      delegate_to: central_server.cloud.fyj.org
+      delegate_to: central_server
       import_role:
         name: nginx_site
       vars:
-        nginx_site_app_name: web_adt
-        nginx_site_filename: "{{ nginx_site_app_name }}/{{ nginx_site_facility_mfl_code }}_{{ nginx_site_app_name }}.conf"
+        nginx_site_filename: "{{ web_adt_application_name }}/{{ nginx_site_facility_mfl_code }}_{{ web_adt_application_name }}.conf"
         nginx_site_server_name: "{{ nginx_site_facility_mfl_code }}.{{ nginx_site_webadt_subdomain }}"
         nginx_site_server_port: 80
         nginx_site_server_ssl_on: true

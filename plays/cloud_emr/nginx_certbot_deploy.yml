@@ -11,6 +11,7 @@
   name: Configure nginx reverse proxy
   roles:
       - role: nginx
+        nginx_sites_enabled: /etc/nginx/sites-enabled/*/*.conf
       - role: certbot
         certbot_email: "{{ certbot_email }}"
       - role: letsencrypt_cert

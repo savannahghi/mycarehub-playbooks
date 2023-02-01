@@ -133,21 +133,29 @@
   become: true
   tags: ["web_adt"]
 
-- name: Fresh installation setup
+- name: Set sql_mode variable. # bypass errors when inserting records to db.
+  community.mysql.mysql_variables:
+    login_unix_socket: "{{ web_adt_db_socket_file_path }}"
+    variable: sql_mode
+    value: NO_ENGINE_SUBSTITUTION
+  become: true
+  tags: ["web_adt"]
+
+- name: Fresh installation setup.
   block:
-    - name: Restore the database from db dumps
+    - name: Copy web_adt dump file
+      ansible.builtin.copy:
+          src: "web_adt.sql"
+          dest: "{{ web_adt_preferred_temp_dir }}/web_adt.sql"
+          mode: "u=rw,g=rw,o=r"
+
+    - name: Restore blank db
       community.mysql.mysql_db:
-        login_host: "{{ web_adt_db_host }}"
-        login_password: "{{ web_adt_db_user_password }}"
-        login_port: "{{ web_adt_db_port }}"
-        login_user: "{{ web_adt_db_user }}"
+        login_unix_socket: "{{ web_adt_db_socket_file_path }}"
         name: "{{ web_adt_db_name }}"
         state: import
-        target: "{{ item }}"
-      ignore_errors: true  # This is necessary because the second file restoration always fails.
-      loop:
-        - "{{ web_adt_preferred_temp_dir }}/2.Installer/resources/database/testadt_v4_tables_only.sql"
-        - "{{ web_adt_preferred_temp_dir }}/2.Installer/resources/database/testadt.sql"
+        target:  "{{ web_adt_preferred_temp_dir }}/web_adt.sql"
   become: true
   tags: ["web_adt"]
   when: web_adt_is_fresh_install
+

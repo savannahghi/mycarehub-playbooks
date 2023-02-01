@@ -1,4 +1,4 @@
-central_server.cloud.fyj.org
+central_server ansible_host=central_server.cloud.fyj.org
 
 [kenyaemr_servers]
 test1.cloud.fyj.org

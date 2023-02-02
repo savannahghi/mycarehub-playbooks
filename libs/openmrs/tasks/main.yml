@@ -12,7 +12,27 @@
   when: not item.value
   tags: ["openmrs"]
 
-- name: Download OpenMRS Platform war file
+- name: Delete any exploded OpenMRS WAR file directory if present
+  ansible.builtin.file:
+    path: "{{ openmrs_servlet_container_app_base_dir }}/openmrs"
+    state: absent
+  become: true
+  tags: ["openmrs"]
+
+- name: Copy OpenMRS Platform WAR file
+  ansible.builtin.copy:
+    backup: no
+    dest: "{{ openmrs_servlet_container_app_base_dir }}"
+    group: "{{ openmrs_servlet_container_user_group }}"
+    mode: "ug=rw,o=r"
+    remote_src: no
+    src: openmrs.war
+    owner: "{{ openmrs_servlet_container_user }}"
+  become: true
+  tags: ["openmrs"]
+  when: not openmrs_platform_war_file_download_url
+
+- name: Download OpenMRS Platform WAR file
   ansible.builtin.get_url:
     dest: "{{ openmrs_servlet_container_app_base_dir }}"
     force: yes
@@ -23,6 +43,7 @@
     url: "{{ openmrs_platform_war_file_download_url }}"
   become: true
   tags: ["openmrs"]
+  when: openmrs_platform_war_file_download_url
 
 - name: Create OpenMRS database user
   become: true

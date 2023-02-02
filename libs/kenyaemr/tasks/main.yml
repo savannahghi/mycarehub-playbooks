@@ -30,6 +30,23 @@
   become: true
   tags: ["kenyaemr"]
 
+- name: Remove existing modules
+  ansible.builtin.file:
+    path: "{{ kenyaemr_openmrs_data_dir }}/modules"
+    state: absent
+  become: true
+  tags: ["kenyaemr"]
+
+- name: Recreate the modules directory
+  ansible.builtin.file:
+    group: "{{ kenyaemr_servlet_container_user_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ kenyaemr_servlet_container_user }}"
+    path: "{{ kenyaemr_openmrs_data_dir }}/modules"
+    state: directory
+  become: true
+  tags: ["kenyaemr"]
+
 - name: Install KenyaEMR distribution
   ansible.builtin.copy:
     dest: "{{ kenyaemr_openmrs_data_dir }}/modules/"
@@ -38,6 +55,7 @@
     mode: "ug=rwx,o=rx"
     owner: "{{ kenyaemr_servlet_container_user }}"
     remote_src: yes
+    # src: "{{ kenyaemr_preferred_temp_dir }}/KenyaEMR_18.1.0_Release/KenyaEMR_18.1.0_Release_2021-10-26/modules/"
     src: "{{ kenyaemr_preferred_temp_dir }}/{{ (kenyaemr_dist_download_data.dest | ansible.builtin.basename | ansible.builtin.splitext)[0] }}/modules/"
   become: true
   tags: ["kenyaemr"]
@@ -80,7 +98,7 @@
         state: import
         target: "{{ item.db_dump_file }}"
       loop:
-        - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_datatools.sql", db_name: kenyaemr_datatools }
+        # - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_datatools.sql", db_name: kenyaemr_datatools }
         - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/kenyaemr_etl.sql", db_name: kenyaemr_etl }
         - { db_dump_file: "{{ kenyaemr_preferred_temp_dir }}/openmrs.sql", db_name: "{{ kenyaemr_db_name }}" }
   become: true

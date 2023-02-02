@@ -18,6 +18,10 @@
     - name: Add application user
       ansible.builtin.user: create_home=yes group={{ kenyaemr_application_user_group }} home=/home/{{ kenyaemr_application_user }} name={{ kenyaemr_application_user }} shell=/bin/bash state=present system=yes
       become: true
+    - name: Stop KenyaEMR service
+      ansible.builtin.systemd_service: name={{ kenyaemr_application_name }} scope=system state=stopped
+      become: true
+      ignore_errors: yes  # Just in case the service doesn't exist yet, e.g on fresh installations.
   roles:
     - common
     - role: tomcat
@@ -55,7 +59,7 @@
         kenyaemr_db_name: "{{ kenyaemr_application_database_name }}"
         kenyaemr_db_user: "{{ kenyaemr_application_database_user }}"
         kenyaemr_db_user_password: "{{ kenyaemr_application_database_user_password }}"
-        kenyaemr_openmrs_data_dir: "{{ kenyaemr_application_server_working_dir }}"
+        kenyaemr_openmrs_data_dir: "{{ kenyaemr_application_server_working_dir }}/.OpenMRS"
         kenyaemr_servlet_container_user: "{{ kenyaemr_application_user }}"
         kenyaemr_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
       tags: ["kenyaemr_application"]
@@ -65,7 +69,7 @@
         daemon_reload: yes
         enabled: yes
         force: yes
-        name: "{{ kenyaemr_application_name }}.service"
+        name: "{{ kenyaemr_application_name }}"
         scope: system
         state: restarted
       become: true

@@ -25,4 +25,13 @@ openmrs_servlet_container_working_dir: ""
 openmrs_servlet_container_user: ""
 openmrs_servlet_container_user_group: ""
 
-openmrs_platform_war_file_download_url: "https://versaweb.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.3.3/openmrs.war"
+# A url to an OpenMRS Platform WAR file to use instead of the default WAR file
+# included in the role. Setting this to a non-empty string will cause the role
+# to ignore the default WAR file included with this role and to instead 
+# download and use the given WAR file from the URL.
+# The default WAR file included with this role is a build from Palledium Kenya
+# and it was used to make it easier to work with KenyaEMR which is the
+# expected primary use case of this role. This variable exists to allow the
+# use case of custom OpenMRS WAR file distributions for situations where the
+# included version is not suitable.
+openmrs_platform_war_file_download_url: "" # "https://versaweb.dl.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.3.3/openmrs.war"

@@ -14,7 +14,7 @@ kenyaemr_db_user_password: ""
 # on test servers before running this on production servers. This is
 # especially important since this release bundles appear to be created by hand
 # and are not always consistent from release to release.
-kenyaemr_dist_download_url: "https://github.com/palladiumkenya/kenyahmis-releases/releases/download/v49/KenyaEMR_18.1.2.zip"
+kenyaemr_dist_download_url: "https://github.com/palladiumkenya/kenyahmis-releases/releases/download/v61/KenyaEMR_18.4.2.zip"
 
 # This flag when set will force the current run to be treated as a fresh
 # installation. This will result to the existing KenyaEMR and tools databases

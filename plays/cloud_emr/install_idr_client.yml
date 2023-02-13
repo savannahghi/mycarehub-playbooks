@@ -2,29 +2,11 @@
 
 - name: Install and set up IDR client application
   hosts: idr_client_hosts
-  become: yes
-  pre_tasks:
-    - name: Add application user group
-      ansible.builtin.group:
-        name: "{{ idr_client_user_group }}"
-        state: present
-        system: yes
-      become: yes
-
-    - name: Add application user
-      ansible.builtin.user:
-        comment: Custom user for running idr related tasks.
-        group: "{{ idr_client_user_group }}"
-        name: "{{ idr_client_user }}"
-        shell: /bin/bash
-        state: present
-        system: yes
-      become: yes
   roles:
     - common
     - idr_client
   strategy: free
   vars:
-    # facility details
-    idr_client_facility_name: "{{ nginx_site_facility_name }}"
-    idr_client_facility_mfl_code: "{{ nginx_site_facility_mfl_code }}"
+    # Location details
+    idr_client_location_code: "{{ nginx_site_facility_mfl_code }}"
+    idr_client_location_name: "{{ nginx_site_facility_name }}"

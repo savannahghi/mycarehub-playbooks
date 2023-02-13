@@ -5,4 +5,3 @@
 #  config of the executing user.
 umask 0005
 {{ idr_client_installation_dir }}/idr_client -c {{ idr_client_config_dir }}/config.yml 
-

@@ -1,7 +1,9 @@
 ---
 
 idr_client_config_dir: /etc/idr_client
+idr_client_hourly_cron_schedule: "4,10,16"  # This must be a valid hourly crontab entry
 idr_client_desktop_entry_installation_dir: /usr/share/applications
+idr_client_do_add_desktop_entries: no
 idr_client_download_url: https://api.github.com/repos/savannahghi/idr-client/releases/latest
 idr_client_icon_installation_dir: /usr/share/pixmaps
 idr_client_installation_dir: /usr/local/bin
@@ -11,19 +13,20 @@ idr_client_force_app_download: no
 # app user details
 idr_client_user: idr
 idr_client_user_group: idr
-idr_client_user_pwd: ""
 
 # idr server url and credentials
 idr_client_server_password: ""
-idr_client_server_url: https://play.cbs.fahariyajamii.org
-idr_client_server_username: admin
+idr_client_server_url: ""
+idr_client_server_username: ""
 
-# host mysql_db credentials
+# host mysql_db login details
 idr_client_host_mysql_address: localhost
 idr_client_host_mysql_password: ""
 idr_client_host_mysql_port: 3306
-idr_client_host_mysql_username: root
+idr_client_host_mysql_host_unix_socket_path: "/tmp/mysqld.sock"
+idr_client_host_mysql_user: idr_client
+idr_client_host_mysql_user_privileges: "*.*:SELECT,SHOW VIEW"
 
-# facility details
-idr_client_facility_name: ""
-idr_client_facility_mfl_code: ""
+# location details
+idr_client_location_code: ""
+idr_client_location_name: ""

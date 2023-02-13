@@ -8,6 +8,7 @@
       - libncurses5
       - tar
     state: present
+    update_cache: yes
   become: true
   tags: ["mysql56"]
 

@@ -1,16 +1,16 @@
 ---
 
 # app user details
-idr_client_app_user: "{{ vault_idr_client_app_user }}"
-idr_client_app_user_group: "{{ vault_idr_client_app_user_group }}"
+idr_client_user: "{{ vault_idr_client_user }}"
+idr_client_user_group: "{{ vault_idr_client_user_group }}"
 
 # idr server url and credentials
-idr_client_app_server_password: "{{ vault_idr_client_app_server_password }}"
-idr_client_app_server_url: "{{ vault_idr_client_app_server_url }}"
-idr_client_app_server_username: "{{ vault_idr_client_app_server_username }}"
+idr_client_server_password: "{{ vault_idr_client_server_password }}"
+idr_client_server_url: "{{ vault_idr_client_server_url }}"
+idr_client_server_username: "{{ vault_idr_client_server_username }}"
 
 # host mysql_db credentials
-idr_client_app_host_mysql_address: "{{ vault_idr_client_app_host_mysql_address }}"
-idr_client_app_host_mysql_password: "{{ vault_idr_client_app_host_mysql_password }}"
-idr_client_app_host_mysql_port: "{{ vault_idr_client_app_host_mysql_port }}"
-idr_client_app_host_mysql_username: "{{ vault_idr_client_app_host_mysql_username }}"
+idr_client_host_mysql_address: "{{ vault_idr_client_host_mysql_address }}"
+idr_client_host_mysql_password: "{{ vault_idr_client_host_mysql_password }}"
+idr_client_host_mysql_port: "{{ vault_idr_client_host_mysql_port }}"
+idr_client_host_mysql_user: "{{ vault_idr_client_host_mysql_user }}"

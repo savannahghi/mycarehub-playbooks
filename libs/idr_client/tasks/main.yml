@@ -1,15 +1,53 @@
 ---
-- name: Create essential directories for the application
-  ansible.builtin.file:
-    group: "{{ idr_client_user_group }}"
-    mode: "{{ item.mode }}" 
-    owner: root
-    path: "{{ item.dir }}" 
-    state: directory
-  become: true
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
   loop:
-    - { dir: "{{ idr_client_config_dir }}", mode: "ug=rwx,o=rx,g+s" }
-    - { dir: "{{ idr_client_logs_dir }}", mode: "a=rwx,g+s" }  # Make the logs directory world writable allowing any user to run the application
+    - { name: idr_client_server_password, value: "{{ idr_client_server_password }}"}
+    - { name: idr_client_server_url, value: "{{ idr_client_server_url }}" }
+    - { name: idr_client_server_username, value: "{{ idr_client_server_username }}" }
+    - { name: idr_client_host_mysql_password, value: "{{ idr_client_host_mysql_password }}" }
+    - { name: idr_client_location_code, value: "{{ idr_client_location_code }}" }
+    - { name: idr_client_location_name, value: "{{ idr_client_location_name }}" }
+  tags: ["idr_client"]
+  when: not item.value
+
+- name: Prepare the Host for IDR Client installation
+  block:
+    - name: Install application dependencies
+      ansible.builtin.apt:
+        name:
+          - cron
+        state: present
+        update_cache: yes
+
+    - name: Add application user group
+      ansible.builtin.group:
+        name: "{{ idr_client_user_group }}"
+        state: present
+        system: yes
+
+    - name: Add application user
+      ansible.builtin.user:
+        comment: Custom user for running idr related tasks.
+        group: "{{ idr_client_user_group }}"
+        name: "{{ idr_client_user }}"
+        shell: /bin/bash
+        state: present
+        system: yes
+
+    - name: Create essential directories for the application
+      ansible.builtin.file:
+        group: "{{ idr_client_user_group }}"
+        mode: "{{ item.mode }}" 
+        owner: root
+        path: "{{ item.dir }}" 
+        state: directory
+      loop:
+        - { dir: "{{ idr_client_config_dir }}", mode: "ug=rwx,o=rx,g+s" }
+        - { dir: "{{ idr_client_logs_dir }}", mode: "a=rwx,g+s" }  # Make the logs directory world writable allowing any user to run the application
+  become: yes
   tags: ["idr_client"]
 
 - name: Check for new application versions
@@ -31,8 +69,8 @@
     - name: Get installed application version
       ansible.builtin.slurp:
         src: "{{ idr_client_config_dir }}/app_version_data.json"
-      become: true
-      ignore_errors: true
+      become: yes
+      ignore_errors: yes
       register: installed_app_version_content
 
     - name: Establish app version facts
@@ -50,18 +88,6 @@
     - name: Show version info
       ansible.builtin.debug:
         msg: The current installed version is '{{ current_installed_app_version }}', latest available version is '{{ latest_available_app_version }}
-
-    - name: Save app version data
-      ansible.builtin.copy:
-        backup: no
-        content: "{{ app_version_data_response.json|to_nice_json }}"
-        dest: "{{ idr_client_config_dir }}/app_version_data.json"
-        force: yes
-        group: "{{ idr_client_user_group }}"
-        mode: "ug=rw,o=r"
-        owner: root
-      become: true
-      when: idr_client_force_app_download or new_version_available
   tags: ["idr_client"]
   
 - name: Install application
@@ -74,7 +100,6 @@
         owner: root
         mode: "a=rx"
         url: "{{ new_version_download_url }}"
-      become: true
 
     - name: Copy script for running the client to the installation directory
       ansible.builtin.template:
@@ -84,7 +109,6 @@
         owner: root
         mode: "ug=rwx,o=rx"
         src: run_idr_client.sh
-      become: true
 
     - name: Copy the application configuration file to the appropriate directory
       ansible.builtin.template:
@@ -95,7 +119,6 @@
         owner: root
         mode: "ug=rw,o=r"
         src: config.yml
-      become: true
 
     - name: Remove existing cron entries for running the client
       ansible.builtin.cron:
@@ -105,14 +128,68 @@
       loop:
         - run_idr_client
         - run auto extraction
+    
+    - name: Create a MySQL DB user to execute SQL queries
+      become: yes
+      community.mysql.mysql_user:
+        login_unix_socket: "{{ idr_client_host_mysql_host_unix_socket_path }}"
+        name: "{{ idr_client_host_mysql_user }}"
+        password: "{{ idr_client_host_mysql_password }}"
+        priv: "{{ idr_client_host_mysql_user_privileges }}"
+        state: present
 
-    - name: Create a cron entry to run the client every day at 3am, 9am and 3pm
+    - name: Create an hourly cron entry to run the client periodically
       ansible.builtin.cron:
-        hour: "3,9,15"
+        hour: "{{ idr_client_hourly_cron_schedule }}"
         job: "{{ idr_client_installation_dir }}/run_idr_client"
         minute: "0"
         name: run_idr_client
         state: present
         user: "{{ idr_client_user }}"
-      when: idr_client_force_app_download or new_version_available
+
+    - name: Save downloaded app version data
+      ansible.builtin.copy:
+        backup: no
+        content: "{{ app_version_data_response.json|to_nice_json }}"
+        dest: "{{ idr_client_config_dir }}/app_version_data.json"
+        force: yes
+        group: "{{ idr_client_user_group }}"
+        mode: "ug=rw,o=r"
+        owner: root
+  become: yes
   tags: ["idr_client"]
+  when: idr_client_force_app_download or new_version_available
+
+- name: Add desktop entries.
+  block:
+    - name: Install desktop file utils
+      ansible.builtin.apt:
+        name:
+          - desktop-file-utils
+        state: present
+        update_cache: no
+  
+    - name: Add a desktop entry for the application.
+      ansible.builtin.template:
+        dest: "{{ idr_client_desktop_entry_installation_dir }}/idr-client.desktop"
+        force: yes
+        group: root
+        mode: "u=rw,go=r"
+        owner: root
+        src: idr-client.desktop
+
+    - name: Add an icon for the application.
+      ansible.builtin.copy:
+        dest: "{{ idr_client_icon_installation_dir }}/idr_logo.png"
+        force: yes
+        group: root
+        mode: "u=rw,go=r"
+        owner: root
+        src: idr_logo.png
+
+    - name: Update desktop entries database.
+      ansible.builtin.shell:
+        cmd: "update-desktop-database {{ idr_client_desktop_entry_installation_dir }}"
+  become: yes
+  tags: ["idr_client"]
+  when: idr_client_do_add_desktop_entries and (idr_client_force_app_download or new_version_available)

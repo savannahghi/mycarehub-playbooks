@@ -72,6 +72,7 @@ HTTP_TRANSPORT:
 DEFAULT_HTTP_API_DIALECT_FACTORY: "app.lib.http.idr_server_api_v1_dialect_factory"
 
 
+
 # =============================================================================
 # IDR SERVER DETAILS
 # =============================================================================
@@ -83,6 +84,8 @@ REMOTE_SERVER:
   username: "{{ idr_client_server_username }}"
   password: "{{ idr_client_server_password }}"
 
+
+
 # =============================================================================
 # SQL DATA SOURCES SETTINGS
 # =============================================================================
@@ -90,13 +93,14 @@ REMOTE_SERVER:
 MYSQL_DB_INSTANCE:
   host: "{{ idr_client_host_mysql_address }}"
   port: "{{ idr_client_host_mysql_port }}"
-  username: "{{ idr_client_host_mysql_username }}"
+  username: "{{ idr_client_host_mysql_user }}"
   password: "{{ idr_client_host_mysql_password }}"
 
+
+
 # =============================================================================
-# FACILITY DETAILS
+# HOST LOCATION DETAILS
 # =============================================================================
 
-ORG_UNIT_NAME: "{{ idr_client_facility_name }}"
-ORG_UNIT_CODE: "{{ idr_client_facility_mfl_code }}" 
-
+ORG_UNIT_CODE: "{{ idr_client_location_code }}" 
+ORG_UNIT_NAME: "{{ idr_client_location_name }}"

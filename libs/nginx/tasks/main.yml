@@ -6,7 +6,7 @@
   tags: ["nginx"]
 
 - name: Activate nginx service
-  ansible.builtin.service: name=nginx state=started enabled=yes
+  ansible.builtin.service: name=nginx enabled=yes
   become: true
   tags: ["nginx"]
 

@@ -7,7 +7,7 @@
 #    - remember to first create the required recordset for which you're obtaining the cert.
 #--------------------------------------------------------------------
 
-- hosts: central_server
+- hosts: central_server1
   name: Configure nginx reverse proxy
   roles:
       - role: nginx

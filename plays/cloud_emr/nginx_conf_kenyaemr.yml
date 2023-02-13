@@ -10,7 +10,7 @@
   tasks:
 
     - name: Create emr application directories for sites
-      delegate_to: central_server
+      delegate_to: central_server1
       ansible.builtin.file:
         path: "{{ item}}"
         state: directory
@@ -22,7 +22,7 @@
       tags: ["kenyaemr_nginx_site"]
 
     - name: Add kenyaEMR nginx configuration file
-      delegate_to: central_server
+      delegate_to: central_server1
       import_role:
         name: nginx_site
       vars:
@@ -52,6 +52,3 @@
                 proxy_redirect default;
           }
       tags: ["kenyaemr_nginx_site"]
-
-
-

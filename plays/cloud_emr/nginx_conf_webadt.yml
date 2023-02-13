@@ -9,7 +9,7 @@
   name: Add webADT application's nginx configuration files
   tasks:
     - name: Create adt application directories for sites
-      delegate_to: central_server
+      delegate_to: central_server1
       ansible.builtin.file:
         path: "{{ item}}"
         state: directory
@@ -21,7 +21,7 @@
       tags: ["webadt_nginx_site"]
 
     - name: Add webADT nginx configuration file
-      delegate_to: central_server
+      delegate_to: central_server1
       import_role:
         name: nginx_site
       vars:
@@ -51,5 +51,3 @@
               proxy_redirect default;
           }
       tags: ["webadt_nginx_site"]
-
-

@@ -9,13 +9,3 @@ certbot_email: "{{ vault_certbot_email }}"
 letsencrypt_cert_domain_suffix: "{{ vault_letsencrypt_cert_domain_suffix }}"
 letsencrypt_cert_dns_credentials: "{{ vault_letsencrypt_cert_dns_credentials }}"
 # ------------------------------------------------------------------------------------------
-
-# idr_client---------------------------------------------------------------------------------
-idr_client_app_config_dir: "{{ vault_idr_client_app_config_dir }}"
-idr_client_app_desktop_entry_installation_dir: "{{ vault_idr_client_app_desktop_entry_installation_dir }}"
-idr_client_app_download_url: "{{ vault_idr_client_app_download_url }}"
-idr_client_app_icon_installation_dir: "{{ vault_idr_client_app_icon_installation_dir }}"
-idr_client_app_installation_dir: "{{ vault_idr_client_app_installation_dir }}"
-idr_client_app_logs_dir: "{{ vault_idr_client_app_logs_dir }}"
-idr_client_app_force_app_download: "{{ vault_idr_client_app_force_app_download }}"
-# -------------------------------------------------------------------------------------------

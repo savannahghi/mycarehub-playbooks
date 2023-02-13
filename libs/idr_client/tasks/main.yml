@@ -1,8 +1,8 @@
 ---
-- name: Create essential directories for the application.
+- name: Create essential directories for the application
   ansible.builtin.file:
     group: "{{ idr_client_user_group }}"
-    mode: "{{ item.mode }}"  
+    mode: "{{ item.mode }}" 
     owner: root
     path: "{{ item.dir }}" 
     state: directory
@@ -12,9 +12,9 @@
     - { dir: "{{ idr_client_logs_dir }}", mode: "a=rwx,g+s" }  # Make the logs directory world writable allowing any user to run the application
   tags: ["idr_client"]
 
-- name: Check for new application versions.
+- name: Check for new application versions
   block:
-    - name: Get latest application version data.
+    - name: Get latest application version data
       ansible.builtin.uri:
         follow_redirects: safe
         force: yes
@@ -28,30 +28,30 @@
       retries: 5
       until: app_version_data_response.status == 200
 
-    - name: Get installed application version.
+    - name: Get installed application version
       ansible.builtin.slurp:
         src: "{{ idr_client_config_dir }}/app_version_data.json"
       become: true
       ignore_errors: true
       register: installed_app_version_content
 
-    - name: Establish app version facts.
+    - name: Establish app version facts
       ansible.builtin.set_fact:
         cacheable: no
         current_installed_app_version: "{{ 'NONE' if installed_app_version_content is failed else (installed_app_version_content.content | b64decode | from_json)['tag_name'] }}"
         latest_available_app_version: "{{ app_version_data_response.json['tag_name'] }}"
         new_version_download_url: "{{ app_version_data_response.json.assets[0].browser_download_url }}"
 
-    - name: Determine if a new application version is available.
+    - name: Determine if a new application version is available
       ansible.builtin.set_fact:
         cacheable: no
         new_version_available: "{{ current_installed_app_version != latest_available_app_version }}"
 
-    - name: Show version info.
+    - name: Show version info
       ansible.builtin.debug:
         msg: The current installed version is '{{ current_installed_app_version }}', latest available version is '{{ latest_available_app_version }}
 
-    - name: Save app version data.
+    - name: Save app version data
       ansible.builtin.copy:
         backup: no
         content: "{{ app_version_data_response.json|to_nice_json }}"
@@ -64,9 +64,9 @@
       when: idr_client_force_app_download or new_version_available
   tags: ["idr_client"]
   
-- name: Install application.
+- name: Install application
   block:
-    - name: Download latest application version.
+    - name: Download latest application version
       ansible.builtin.get_url:
         dest: "{{ idr_client_installation_dir }}/idr_client"
         force: yes
@@ -76,7 +76,7 @@
         url: "{{ new_version_download_url }}"
       become: true
 
-    - name: Copy script for running the client to the installation directory. 
+    - name: Copy script for running the client to the installation directory
       ansible.builtin.template:
         dest: "{{ idr_client_installation_dir }}/run_idr_client"
         force: yes
@@ -86,7 +86,7 @@
         src: run_idr_client.sh
       become: true
 
-    - name: Copy the application configuration file to the appropriate directory.
+    - name: Copy the application configuration file to the appropriate directory
       ansible.builtin.template:
         backup: yes
         dest: "{{ idr_client_config_dir }}/config.yml"
@@ -97,7 +97,7 @@
         src: config.yml
       become: true
 
-    - name: Remove existing cron entries for running the client.
+    - name: Remove existing cron entries for running the client
       ansible.builtin.cron:
         name: "{{ item }}"
         state: absent
@@ -106,7 +106,7 @@
         - run_idr_client
         - run auto extraction
 
-    - name: Create a cron entry to run the client every day at 3am, 9am and 3pm.
+    - name: Create a cron entry to run the client every day at 3am, 9am and 3pm
       ansible.builtin.cron:
         hour: "3,9,15"
         job: "{{ idr_client_installation_dir }}/run_idr_client"

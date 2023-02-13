@@ -1,10 +1,16 @@
 [teleport_edge_servers]
 12867.cloud.fyj.org
+13014.cloud.fyj.org
 13052.cloud.fyj.org
 14200.cloud.fyj.org
+14204.cloud.fyj.org
+14469.cloud.fyj.org
 15560.cloud.fyj.org
+18612.cloud.fyj.org
+27276.cloud.fyj.org
+bm1.cloud.fyj.org
 central_server.cloud.fyj.org
-test[1:2].cloud.fyj.org
+test[1:4].cloud.fyj.org
 
 [teleport_master_servers]
 teleport_prod

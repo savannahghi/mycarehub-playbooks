@@ -1,0 +1,7 @@
+---
+
+nginx_site_server_address: "{{ vault_nginx_site_server_address }}"
+nginx_site_facility_name: "Kasarani Maternity"
+nginx_site_facility_mfl_code: 13011
+nginx_site_kenyaemr_port: 7070
+nginx_site_webadt_port: 6060

@@ -1,0 +1,6 @@
+---
+
+teleport_ssh_extra_static_label: "facility-name: Radiant Pangani Hospital"
+teleport_ssh_node_env: prod
+teleport_ssh_node_provider: HETZNER
+teleport_ssh_node_region: Germany

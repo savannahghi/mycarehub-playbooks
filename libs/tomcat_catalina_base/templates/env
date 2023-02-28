@@ -1,0 +1,6 @@
+# This file is meant to be used with systemd.
+# It should be set on the systemd unit file using the "EnvironmentFile" setting
+CATALINA_BASE="{{ catalina_base_root_dir }}"
+CATALINA_HOME="{{ catalina_base_tomcat_root_dir }}"
+JAVA_HOME="{{ catalina_base_java_home }}"
+JAVA_OPTS="-Xmx{{ catalina_base_maximum_java_heap_size }} -Xms{{ catalina_base_initial_java_heap_size }} -Djava.awt.headless=true"

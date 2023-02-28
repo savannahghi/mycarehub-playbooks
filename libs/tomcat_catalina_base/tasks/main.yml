@@ -73,17 +73,17 @@
 - name: Override the default binary files with those specific to this setup
   ansible.builtin.template:
     backup: no
-    dest: "{{ catalina_base_root_dir }}/bin/{{ item }}"
+    dest: "{{ catalina_base_root_dir }}/bin/{{ item.file }}"
     force: yes
     group: "{{ catalina_base_owning_group }}"
-    mode: "ug=rwx,o=r"
+    mode: "{{ item.mode }}"
     owner: "{{ catalina_base_owning_user }}"
-    src: "{{ item }}"
+    src: "{{ item.file }}"
   become: true
   loop:
-    - setenv.sh
-    - shutdown.sh
-    - startup.sh
+    - { file: env, mode: "ug=rw,o=r" }
+    - { file: shutdown.sh, mode: "ug=rwx,o=r" }
+    - { file: startup.sh, mode: "ug=rwx,o=r" }
   tags: ["tomcat_catalina_base"]
 
 - name: Set up server systemd unit file

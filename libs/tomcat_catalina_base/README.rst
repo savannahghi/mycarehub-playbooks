@@ -2,7 +2,7 @@ Set up Apache Tomcat CATALINA_BASE
 ==================================
 
 In `Apache Tomcat <tomcat_home_page_>`_, the ``CATALINA_BASE`` property refers to the root (directory) of a runtime configuration of a specific Tomcat instance. This is important when you want to have multiple Tomcat instances on one machine.
-This differs from the ``CATALINA_HOME`` directory which should contains static sources such as ``.jar`` files and/or binary files whereas the ``CATALINA_BASE`` directory should contain configuration files, log files, deployed applications, and other runtime requirements.
+This differs from the ``CATALINA_HOME`` directory which contains static sources such as ``.jar`` files and/or binary files whereas the ``CATALINA_BASE`` directory should contain configuration files, log files, deployed applications, and other runtime requirements.
 
 This role sets up a ``CATALINA_BASE`` directory and expects that an existing ``CATALINA_HOME`` directory is already present on the target host.
 

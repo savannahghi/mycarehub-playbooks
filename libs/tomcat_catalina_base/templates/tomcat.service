@@ -1,18 +1,19 @@
 [Unit]
-Description=Apache Tomcat 9 Web Application Server
-Documentation=https://tomcat.apache.org/tomcat-9.0-doc/index.html
+Description={{ catalina_base_systemd_unit_description }}
+Documentation={{ catalina_base_systemd_unit_documentation }}
 Wants=network-online.target
 After=network-online.target
 
 [Service]
-Type=forking
-User={{ catalina_base_owning_user }}
 Group={{ catalina_base_owning_group }}
-WorkingDirectory={{ catalina_base_tomcat_working_dir }}
 ExecStart={{ catalina_base_root_dir }}/bin/startup.sh
 ExecStop={{ catalina_base_root_dir }}/bin/shutdown.sh
-SuccessExitStatus=143
+EnvironmentFile={{ catalina_base_systemd_unit_environment_file_path }}
 Restart=always
+SuccessExitStatus=143
+Type=forking
+User={{ catalina_base_owning_user }}
+WorkingDirectory={{ catalina_base_tomcat_working_dir }}
 
 [Install]
 WantedBy=multi-user.target

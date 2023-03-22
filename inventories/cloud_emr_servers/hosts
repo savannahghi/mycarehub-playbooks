@@ -28,6 +28,10 @@ central_server1 ansible_host=bm1.cloud.fyj.org
 [test]
 test[1:4].cloud.fyj.org
 
+[emr_db_hosts:children]
+prod
+test
+
 [idr_client_hosts:children]
 prod
 test
@@ -41,6 +45,7 @@ prod
 test
 
 [cloud_emr_servers:children]
+emr_db_hosts
 idr_client_hosts
 kenyaemr_servers
 web_adt_servers

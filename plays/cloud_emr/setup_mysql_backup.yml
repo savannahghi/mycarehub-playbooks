@@ -1,0 +1,37 @@
+---
+
+# ------------------------------------------------------------------------------------------------------
+# ansible-playbook -i inventories/cloud_emr_servers -l "test1.cloud.fyj.org" plays/cloud_emr/setup_mysql_backup.yml -vvv --vault-id=~/.vaultpass
+# ------------------------------------------------------------------------------------------------------
+- name: Setup mysql database backup, locally and to gcp buckets.
+  hosts: emr_db_hosts
+  pre_tasks:
+    - name: Get path to mysqldump on the remote host.
+      ansible.builtin.command: 'which mysqldump' 
+      register: mysqldump_binary_path
+      ignore_errors: yes
+
+  roles:
+    - common
+    - db_backup
+  strategy: free
+  vars:
+    # Location details
+    db_backup_location_code: "{{ nginx_site_facility_mfl_code }}"
+    db_backup_location_name: "{{ nginx_site_facility_name }}"
+
+    # app user details
+    db_backup_user: "{{ vault_db_backup_user }}"
+    db_backup_user_group: "{{ vault_db_backup_user_group }}"
+
+    # mysql db vars.
+    db_backup_mysql_host: "{{ vault_db_backup_mysql_host }}"
+    db_backup_mysql_port: "{{ vault_db_backup_mysql_port }}"
+    db_backup_mysql_user_password: "{{ vault_db_backup_mysql_user_password }}"
+    db_backup_mysqldump_binary_path: "{{ mysqldump_binary_path.stdout }}"
+
+    # gcp vars
+    db_backup_gcp_bucket_location: "{{ vault_db_backup_gcp_bucket_location }}"
+    db_backup_gcp_bucket_storage_class: "{{ vault_db_backup_gcp_bucket_storage_class }}"
+    db_backup_gcp_bucket_name: "{{ vault_db_backup_gcp_bucket_name }}"
+    db_backup_gcp_app_credentials: "{{ vault_db_backup_gcp_app_credentials }}"

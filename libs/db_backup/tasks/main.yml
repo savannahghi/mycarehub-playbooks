@@ -1,0 +1,119 @@
+---
+
+- name: Ensure required variables have been set
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
+  loop:
+    # System User details(Backup Manager)  
+    - { name: db_backup_user, value: "{{ db_backup_user }}" }
+    - { name: db_backup_user_group, value: "{{ db_backup_user_group }}" }
+    - { name: db_backup_home_dir, value: "{{ db_backup_home_dir }}" }
+    - { name: db_backup_backup_dir, value: "{{ db_backup_backup_dir }}" }
+    # MySQL user details
+    - { name: db_backup_mysql_host, value: "{{ db_backup_mysql_host }}" }
+    - { name: db_backup_mysql_port, value: "{{ db_backup_mysql_port }}" }
+    - { name: db_backup_mysql_user, value: "{{ db_backup_mysql_user }}" }
+    # Gcp bucket-required details
+    - { name: db_backup_gcp_app_credentials, value: "{{ db_backup_gcp_app_credentials }}" }
+    - { name: db_backup_gcp_bucket_name, value: "{{ db_backup_gcp_bucket_name }}" }
+    - { name: db_backup_location_code, value: "{{ db_backup_location_code }}" }
+    - { name: db_backup_location_name, value: "{{ db_backup_location_name }}" }
+  tags: ["db_backup"]
+  when: not item.value
+
+- name: Prepare the Host for mysql DB backups
+  block:
+    - name: Install application dependencies
+      ansible.builtin.apt:
+        name:
+          - cron
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Add application user group
+      ansible.builtin.group:
+        name: "{{ db_backup_user_group }}"
+        state: present
+        system: yes
+
+    - name: Add application user
+      ansible.builtin.user:
+        create_home: yes 
+        group: "{{ db_backup_user_group }}"
+        home: "/home/{{ db_backup_user }}" 
+        name: "{{ db_backup_user }}"
+        comment: "user account for handling database backups only"
+        shell: "/bin/bash"
+        state: "present"
+        system: yes
+
+    - name: Install pip packages to facilitate db backup to gcp bucket.
+      ansible.builtin.pip:
+        name: "{{ item }}"
+      loop: 
+        - google-api-python-client~=2.79.0
+        - google-cloud-storage~=2.7.0
+      become: yes
+      become_user: "{{ db_backup_user }}"
+
+    - name: Create directory for storing backup files.
+      ansible.builtin.file:
+        group: "{{ db_backup_user_group }}"
+        mode: "ug=rwx,o=rx,g+s"
+        owner: "{{ db_backup_user }}"
+        path: "{{ db_backup_backup_dir }}" 
+        state: directory
+
+    - name: Copy gcp application credentials to user's home directory
+      ansible.builtin.template:
+        dest: "{{ db_backup_home_dir }}"
+        force: yes
+        group: "{{ db_backup_user_group }}"
+        owner: "{{ db_backup_user }}"
+        mode: "ug=rwx,o=rx"
+        src: gcp_app_credentials.json
+
+  become: yes
+  tags: ["db_backup"]
+
+
+- name: Deploy the backup script.
+  block:
+
+    - name: Copy script for running the database backup
+      ansible.builtin.template:
+        dest: "{{ db_backup_home_dir }}"
+        force: yes
+        group: "{{ db_backup_user_group }}"
+        owner: "{{ db_backup_user }}"
+        mode: "ug=rwx,o=rx"
+        src: mysql_backup.py
+
+    - name: Remove existing cron entries for running backup script
+      ansible.builtin.cron:
+        name: "run_mysql_db_backup"
+        state: absent
+        user: "{{ db_backup_user }}"
+
+    - name: Create a MySQL DB user to execute SQL queries
+      community.mysql.mysql_user:
+        login_unix_socket: "{{ db_backup_mysql_unix_socket_path }}"
+        name: "{{ db_backup_mysql_user }}"
+        password: "{{ db_backup_mysql_user_password }}"
+        priv: "{{ db_backup_mysql_user_privileges }}"
+        state: present
+
+    - name: Create cron entry to run the backup periodically
+      ansible.builtin.cron:
+        hour: "{{ db_backup_cron_schedule }}"
+        job: "cd {{ db_backup_home_dir }} && ./mysql_backup.py >> {{ db_backup_home_dir }}/info.log 2>&1"
+        minute: "0"
+        name: run_mysql_db_backup
+        state: present
+        user: "{{ db_backup_user }}"
+
+  become: yes
+  tags: ["db_backup"]
+
+

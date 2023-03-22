@@ -1,0 +1,32 @@
+---
+
+#------------------------------------------------------------------------ 
+# gcp required variables
+#------------------------------------------------------------------------
+db_backup_gcp_bucket_location: "europe-west1"
+db_backup_gcp_bucket_storage_class: "STANDARD"
+db_backup_gcp_bucket_name: "{{ db_backup_gcp_bucket_name }}"
+db_backup_gcp_app_credentials: "{{ db_backup_home_dir }}/gcp_app_credentials.json"
+db_backup_location_code: "{{ nginx_site_facility_mfl_code }}"
+db_backup_location_name: "{{ nginx_site_facility_name }}"
+
+#------------------------------------------------------------------------ 
+# local backup vars
+#------------------------------------------------------------------------
+
+# app user details and direcories
+db_backup_user: backup_admin
+db_backup_user_group: backup_admin
+
+db_backup_home_dir: "/home/{{ db_backup_user }}"
+db_backup_backup_dir: "/home/{{ db_backup_user }}/db_backups"
+db_backup_cron_schedule: "4,10,16" 
+
+# mysql server and server user details
+db_backup_mysql_host: 127.0.0.1
+db_backup_mysql_port: 3306
+db_backup_mysql_user: backup_admin
+db_backup_mysql_user_password: ""
+db_backup_mysql_user_privileges: "*.*:SELECT,SHOW VIEW,RELOAD,PROCESS,LOCK TABLES"
+db_backup_mysql_unix_socket_path: "/tmp/mysqld.sock"
+db_backup_mysqldump_binary_path: "/usr/local/bin/mysqldump"

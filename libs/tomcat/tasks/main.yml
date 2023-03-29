@@ -11,7 +11,7 @@
 
 - name: Download Apache Tomcat
   ansible.builtin.get_url:
-    dest: "{{ tomcat_temp_download_dir }}/apache_tomcat.tar.gz"
+    dest: "{{ tomcat_preferred_tmp_dir }}/apache_tomcat.tar.gz"
     force: yes
     timeout: 10
     url: "{{ tomcat_download_url }}" 
@@ -28,7 +28,7 @@
     keep_newer: yes
     owner: "{{ tomcat_owning_user }}"
     remote_src: yes
-    src: "{{ tomcat_temp_download_dir }}/apache_tomcat.tar.gz"
+    src: "{{ tomcat_preferred_tmp_dir }}/apache_tomcat.tar.gz"
   become: true
   tags: ["tomcat"]
 

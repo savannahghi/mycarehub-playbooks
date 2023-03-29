@@ -10,7 +10,7 @@ This installation is more suitable for the root installation of Tomcat as define
 Prerequisites
 -------------
 
-Although not required as part of this installation, it is expected that a compatible `Java Standard Edition Runtime(JRE) <jre_description_>`_ version for the Tomcat version being installed is present on the target host.
+Although not performed as part of this installation, it is expected that a compatible `Java Standard Edition Runtime(JRE) <jre_description_>`_ version for the Tomcat version being installed is present on the target host.
 The compatible JRE version can be found at the `RUNNING.txt` doc file of the Tomcat version being installed. For example, `here <tomcat_9_running_txt_>`_ is the `RUNNING.txt` for Tomcat version 9.
 
 

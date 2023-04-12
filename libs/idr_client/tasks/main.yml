@@ -119,15 +119,6 @@
         owner: root
         mode: "ug=rw,o=r"
         src: config.yml
-
-    - name: Remove existing cron entries for running the client
-      ansible.builtin.cron:
-        name: "{{ item }}"
-        state: absent
-        user: "{{ idr_client_user }}"
-      loop:
-        - run_idr_client
-        - run auto extraction
     
     - name: Create a MySQL DB user to execute SQL queries
       become: yes
@@ -138,10 +129,19 @@
         priv: "{{ idr_client_host_mysql_user_privileges }}"
         state: present
 
+    - name: Remove existing cron entries for running the client
+      ansible.builtin.cron:
+        name: "{{ item }}"
+        state: absent
+        user: "{{ idr_client_user }}"
+      loop:
+        - run_idr_client
+        - run auto extraction
+  
     - name: Create an hourly cron entry to run the client periodically
       ansible.builtin.cron:
         hour: "{{ idr_client_hourly_cron_schedule }}"
-        job: "{{ idr_client_installation_dir }}/run_idr_client"
+        job: "{{ idr_client_cron_sleep_randomizer }} {{ idr_client_installation_dir }}/run_idr_client"
         minute: "0"
         name: run_idr_client
         state: present

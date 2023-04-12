@@ -2,6 +2,7 @@
 
 idr_client_config_dir: /etc/idr_client
 idr_client_hourly_cron_schedule: "4,10,16"  # This must be a valid hourly crontab entry
+idr_client_cron_sleep_randomizer: bash -c 'sleep $((RANDOM*3600/33323))'; # Delay execution at random mins between 0-59
 idr_client_desktop_entry_installation_dir: /usr/share/applications
 idr_client_do_add_desktop_entries: no
 idr_client_download_url: https://api.github.com/repos/savannahghi/idr-client/releases/latest

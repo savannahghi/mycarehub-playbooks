@@ -104,7 +104,7 @@ teleport_log_output: /var/lib/teleport/teleport.log
 teleport_log_severity: INFO
 
 # The teleport major version to install.
-teleport_major_version: 12
+teleport_major_version: 13
 
 # If this is left as an empty string, then Teleport's default value(the target
 # hostname) is used instead.

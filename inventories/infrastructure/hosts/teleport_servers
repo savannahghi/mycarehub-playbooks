@@ -22,8 +22,18 @@
 23373.cloud.fyj.org
 27276.cloud.fyj.org
 
+15153.bm2.cloud.fyj.org
+15185.bm2.cloud.fyj.org
+15434.bm2.cloud.fyj.org
+15767.bm2.cloud.fyj.org
+15770.bm2.cloud.fyj.org
+15787.bm2.cloud.fyj.org
+18195.bm2.cloud.fyj.org
+
 bm1.cloud.fyj.org
+bm2.cloud.fyj.org
 test[1:4].cloud.fyj.org
+test[5:6].bm2.cloud.fyj.org
 
 [teleport_master_servers]
 teleport_prod

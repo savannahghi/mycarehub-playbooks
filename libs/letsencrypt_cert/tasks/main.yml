@@ -1,12 +1,22 @@
 ---
 
-- name: Register wildcard certificate for emr domain.
-  ansible.builtin.shell: 'certbot certonly --dns-google --dns-google-credentials {{ letsencrypt_cert_dns_credentials }} -d {{ certificate_domain }} --quiet --non-interactive -m {{ certbot_email }} --agree-tos --pre-hook "{{ certbot_prehook }}"  --post-hook "{{ certbot_posthook }}"'
+- name: Register wildcard certificate for emr domain  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: |
+      certbot certonly
+      --dns-google
+      --dns-google-credentials {{ letsencrypt_cert_dns_credentials }}
+      -d {{ certificate_domain }}
+      --quiet
+      --non-interactive
+      -m {{ certbot_email }}
+      --agree-tos
+      --pre-hook "{{ certbot_prehook }}"
+      --post-hook "{{ certbot_posthook }}"
   become: true
-  retries: 3
   delay: 3
-  register: result
-  until: result.rc == 0
   ignore_errors: "{{ ansible_check_mode }}"
+  retries: 3
+  register: result
   tags: ["letsencrypt_cert"]
-
+  until: result.rc == 0

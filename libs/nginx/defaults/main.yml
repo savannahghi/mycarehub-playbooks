@@ -1,11 +1,10 @@
 ---
 
-nginx_sites_enabled: /etc/nginx/sites-enabled/*
+nginx_dummy_certs_dir: /opt/dummy_certs
 nginx_port: 80
-nginx_ssl_on: false
-nginx_ssl_port: 443
+nginx_server_name: ""
+nginx_sites_enabled: /etc/nginx/sites-enabled/*
 nginx_ssl_cert: ""
 nginx_ssl_cert_key: ""
-nginx_server_name: ""
-nginx_dummy_certs_dir: /opt/dummy_certs
-
+nginx_ssl_on: false
+nginx_ssl_port: 443

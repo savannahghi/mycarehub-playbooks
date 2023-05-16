@@ -1,14 +1,15 @@
 ---
+
+nginx_site_confirm_string: ""
+nginx_site_extra: ""
 nginx_site_filename: ""
+nginx_site_http2_enabled: false
+nginx_site_server_block_extra: ""
 nginx_site_server_name: ""
 nginx_site_server_port: 80
-nginx_site_server_ssl_on: false
-nginx_site_server_ssl_port: 443
 nginx_site_server_ssl_cert: ""
 nginx_site_server_ssl_key: ""
-nginx_site_server_block_extra: ""
-nginx_site_extra: ""
-nginx_site_validate_certs: true
+nginx_site_server_ssl_on: false
+nginx_site_server_ssl_port: 443
 nginx_site_server_url: "http://{{ nginx_site_server_name }}"
-nginx_site_confirm_string: ""
-nginx_site_http2_enabled: false
+nginx_site_validate_certs: true

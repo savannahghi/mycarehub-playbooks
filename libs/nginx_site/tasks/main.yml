@@ -1,49 +1,52 @@
 ---
 
 - name: Check if required vars have been defined
-  ansible.builtin.fail: msg="{{ item }} is not defined"
-  when: not item
+  ansible.builtin.fail:
+    msg: "'{{ item.name }}' is not defined"
   loop:
-      - nginx_site_filename
-      - nginx_site_server_name
-      - nginx_site_confirm_string
+    - { name: nginx_site_confirm_string, value: "{{ nginx_site_confirm_string }}" }
+    - { name: nginx_site_filename, value: "{{ nginx_site_filename }}" }
+    - { name: nginx_site_server_name, value: "{{ nginx_site_server_name }}" }
   tags: ["nginx_site"]
+  when: not item.value
 
 - name: Add site config
   ansible.builtin.template:
-      src: nginx_site.nginx.conf
-      dest: "/etc/nginx/sites-available/{{ nginx_site_filename }}"
-      owner: "root"
-      group: "root"
-      mode: "u=rw,g=rw,o=r"
+    dest: /etc/nginx/sites-available/{{ nginx_site_filename }}
+    group: root
+    mode: "u=rw,g=rw,o=r"
+    owner: root
+    src: nginx_site.nginx.conf
   become: true
   tags: ["nginx_site"]
 
 - name: Enable site
   ansible.builtin.file:
-      src: "/etc/nginx/sites-available/{{ nginx_site_filename }}"
-      dest: "/etc/nginx/sites-enabled/{{ nginx_site_filename }}"
-      state: link
-      owner: "root"
-      group: "root"
-      mode: "u=rw,g=rw,o=r"
+    dest: /etc/nginx/sites-enabled/{{ nginx_site_filename }}
+    group: root
+    mode: "u=rw,g=rw,o=r"
+    owner: root
+    src: /etc/nginx/sites-available/{{ nginx_site_filename }}
+    state: link
   become: true
   tags: ["nginx_site"]
 
-- name: Restart nginx
-  ansible.builtin.service: name=nginx state=restarted
+- name: Restart Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
   become: true
   tags: ["nginx_site"]
 
 - name: Access site
   ansible.builtin.uri:
-      url: "{{ nginx_site_server_url }}"
-      return_content: yes
-      validate_certs: "{{ nginx_site_validate_certs }}"
-  retries: 3
+    return_content: true
+    url: "{{ nginx_site_server_url }}"
+    validate_certs: "{{ nginx_site_validate_certs }}"
   delay: 5
-  register: accessed_page
-  until: accessed_page.status == 200
   failed_when: nginx_site_confirm_string not in accessed_page.content
   ignore_errors: "{{ ansible_check_mode }}"
+  register: accessed_page
+  retries: 3
   tags: ["nginx_site"]
+  until: accessed_page.status == 200

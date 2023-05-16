@@ -2,56 +2,55 @@
 
 - name: Remove old certbot packages
   ansible.builtin.apt:
-      name: certbot
-      state: absent
+    name: certbot
+    state: absent
   become: true
   tags: ["certbot"]
 
 - name: Install snapd if not present
   ansible.builtin.apt:
-      name: snapd
-      state: present
-      update_cache: yes
+    name: snapd
+    state: present
+    update_cache: true
   become: true
   tags: ["certbot"]
 
-- name: Install snap core
-  ansible.builtin.shell:
-      cmd: "snap install core"
+- name: Install snap core  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: snap install core
   become: true
   tags: ["certbot"]
 
-- name: Update snapd
-  ansible.builtin.shell:
-      cmd: "snap refresh core"
+- name: Update snapd  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: snap refresh core
   become: true
   tags: ["certbot"]
 
-- name: Install certbot
-  ansible.builtin.shell:
-      cmd: "snap install --classic certbot"
+- name: Install certbot  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: snap install --classic certbot
   become: true
   tags: ["certbot"]
 
 - name: Prepare certbot command
   ansible.builtin.file:
-      src: "/snap/bin/certbot"
-      dest: "/usr/bin/certbot"
-      state: link
-      owner: "root"
-      group: "root"
+    dest: /usr/bin/certbot
+    group: root
+    owner: root
+    src: /snap/bin/certbot
+    state: link
   become: true
   tags: ["certbot"]
 
-- name: Trust certbot plugin.
-  ansible.builtin.shell:
-      cmd: "snap set certbot trust-plugin-with-root=ok"
+- name: Trust certbot plugin  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: snap set certbot trust-plugin-with-root=ok
   become: true
   tags: ["certbot"]
 
-- name: Install certbot-dns-google to allow for wildcard domain certs.
-  ansible.builtin.shell:
-      cmd: "snap install certbot-dns-google"
+- name: Install certbot-dns-google  # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: snap install certbot-dns-google
   become: true
   tags: ["certbot"]
-

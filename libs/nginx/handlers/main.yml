@@ -1,11 +1,14 @@
 ---
 
-- name: restart nginx
-  ansible.builtin.service: name=nginx state=restarted
+- name: Restart Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
   become: true
   tags: ["nginx"]
 
-- name: confirm nginx config
-  command: nginx -t
+- name: Confirm Nginx Config
+  ansible.builtin.command:
+    cmd: nginx -t
   become: true
   tags: ["nginx"]

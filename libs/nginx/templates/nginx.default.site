@@ -20,4 +20,3 @@ server {
   ssl_certificate_key {{ nginx_dummy_certs_dir }}/dummy.key;
   return 444;
 }
-

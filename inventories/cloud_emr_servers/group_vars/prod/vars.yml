@@ -1,6 +1,0 @@
----
-
-# idr client overrides
-idr_client_server_password: "{{ vault_idr_client_server_password }}"
-idr_client_server_url: "{{ vault_idr_client_server_url }}"
-idr_client_server_username: "{{ vault_idr_client_server_username }}"

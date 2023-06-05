@@ -2,6 +2,4 @@
 
 - import_playbook: install_mysql56.yml
 - import_playbook: install_kenyaemr.yml
-- import_playbook: install_web_adt.yml
 - import_playbook: nginx_conf_emr_apps.yml
-- import_playbook: install_idr_client.yml

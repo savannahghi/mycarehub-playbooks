@@ -36,6 +36,14 @@ sudo mkdir -p /var/log/ansible/hosts
 sudo chmod a=rwx /var/log/ansible/hosts
 ```
 
+### populating ssh.cfg
+You will need to create a configuration for the host
+you can search for your host configuration using the following command `cat ~/.ssh/config | grep "hostname"  -A6 `
+
+### Adding the host name
+under `/inventories/mch_emr_servers`, you will find a `hosts` file
+replace the `hostname` with your own host name
+
 ### Working with Teleport Hosts
 Some of the hosts defined in the inventory are only accessible through a [Teleport server](https://goteleport.com/docs/). As such, special configuration on the Ansible control node is required. This can be achieved using the following steps:
 > Note: Unless specified otherwise, the instructions and examples from this section henceforth will use a Teleport server hosted at `https://test.teleport.fahariyajamii.org`, a Teleport user named `barakobama` and a local user account *(on the control node)* named `barak`.

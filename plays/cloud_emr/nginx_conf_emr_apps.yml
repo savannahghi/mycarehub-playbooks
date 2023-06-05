@@ -6,4 +6,3 @@
 #-----------------------------------------------------------------------
 
 - import_playbook: nginx_conf_kenyaemr.yml
-- import_playbook: nginx_conf_webadt.yml

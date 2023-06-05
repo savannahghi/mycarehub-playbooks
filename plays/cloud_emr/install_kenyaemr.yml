@@ -47,14 +47,7 @@
         openmrs_servlet_container_user: "{{ kenyaemr_application_user }}"
         openmrs_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
         openmrs_servlet_container_working_dir: "{{ kenyaemr_application_server_working_dir }}"
-  strategy: free
-  vars:
-    deploy_user: deploy
-  
-  tasks:
-    - name: Install and set up The KenyaEMR distribution
-      import_role:
-        name: kenyaemr
+    - role: kenyaemr
       vars:
         kenyaemr_db_name: "{{ kenyaemr_application_database_name }}"
         kenyaemr_db_user: "{{ kenyaemr_application_database_user }}"
@@ -62,8 +55,17 @@
         kenyaemr_openmrs_data_dir: "{{ kenyaemr_application_server_working_dir }}/.OpenMRS"
         kenyaemr_servlet_container_user: "{{ kenyaemr_application_user }}"
         kenyaemr_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
-      tags: ["kenyaemr_application"]
-    
+    - role: mycarehub
+      vars:
+        kenyaemr_openmrs_data_dir: "{{ kenyaemr_application_server_working_dir }}/.OpenMRS"
+        kenyaemr_servlet_container_user: "{{ kenyaemr_application_user }}"
+        kenyaemr_servlet_container_user_group: "{{ kenyaemr_application_user_group }}"
+        
+  strategy: free
+  vars:
+    deploy_user: deploy
+  
+  tasks:
     - name: Enable and restart KenyaEMR application service
       ansible.builtin.systemd_service:
         daemon_reload: yes
@@ -74,3 +76,4 @@
         state: restarted
       become: true
       tags: ["kenyaemr_application"]
+  

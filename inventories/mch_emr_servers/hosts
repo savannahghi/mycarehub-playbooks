@@ -1,0 +1,12 @@
+[prod]
+default_facility ansible_host=hostname
+
+[local_host]
+localhost  ansible_connection=local
+
+[kenyaemr_servers:children]
+prod
+local_host
+
+[mch_emr_servers:children]
+kenyaemr_servers

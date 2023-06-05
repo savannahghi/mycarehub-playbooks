@@ -1,0 +1,13 @@
+---
+
+- name: Copy mycarehub module to install it
+  ansible.builtin.copy:
+    backup: no
+    dest: "{{ kenyaemr_openmrs_data_dir }}/modules/"
+    remote_src: no
+    group: "{{ kenyaemr_servlet_container_user_group }}"
+    mode: "ug=rwx,o=rx"
+    owner: "{{ kenyaemr_servlet_container_user }}"
+    src: mycarehub-1.0.9.omod
+  become: true
+
